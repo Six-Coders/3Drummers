@@ -1,0 +1,45 @@
+#  ONSET-AND-FRAMES -------------------
+imageio == 2.20.0
+librosa == 0.7.2
+note-seq == 0.0.3
+numba == 0.48.0
+numpy == 1.21.6
+six == 1.16.0
+sox == 1.4.1
+tensorflow == 2.9.1
+tensorflow-probability == 0.17.0
+tf_slim == 1.1.0
+wheel == 0.37.1
+mir_eval == 0.6
+pydub == 0.25.1
+
+# DEMUCS -------------------
+dora-search>=0.1.12
+diffq>=0.2.1
+einops
+flake8
+hydra-colorlog>=1.1
+hydra-core>=1.1
+julius>=0.2.3
+lameenc>=1.2
+openunmix
+musdb>=0.4.0
+museval>=0.4.0
+submitit
+treetable>=0.2.3
+soundfile>=0.10.3;sys_platform=="win32"
+tqdm
+PySide2
+PySoundFile
+pyyaml
+torch>=1.8.1
+torchaudio>=0.8
+mypy
+
+#MIDI UX -------------------
+pygame
+pretty_midi
+PyQt5
+magenta
+
+

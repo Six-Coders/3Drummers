@@ -1,0 +1,16 @@
+name: 3Drummers
+
+channels:
+  - defaults
+  - pytorch
+  - conda-forge
+
+dependencies:
+  - python=3.8
+  - ffmpeg>=4.2
+  - pytorch>=1.8.1
+  - torchaudio>=0.8
+  - tqdm>=4.36
+  - pip
+  - pip:
+    - -r requirements.txt
