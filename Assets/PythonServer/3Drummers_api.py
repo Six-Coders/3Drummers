@@ -46,7 +46,7 @@ def handle_client(client_socket):
 
 def start_server():
     host = "127.0.0.1"  # Dirección IP del servidor (localhost)
-    port = 12345  # Puerto en el que el servidor escucha
+    port = 2444  # Puerto en el que el servidor escucha
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))

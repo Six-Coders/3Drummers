@@ -28,14 +28,14 @@ public class PythonServerAPI : MonoBehaviour
         string startServerCommand = $"python \"{apiPath}\"";
         cancellationTokenSource = new CancellationTokenSource();
         // Verificar si la conexión TCP está cerrada
-        
+        /*
         if (tcpClient != null && tcpClient.Connected)
         {
             CloseConnection();
         }
   
         StartPythonServer(startServerCommand);
-        
+        */
 
         loadingIndicator.ShowLoadingIndicator("System loading...");
         await WaitForServerReady(cancellationTokenSource.Token);
@@ -62,16 +62,16 @@ public class PythonServerAPI : MonoBehaviour
         pythonProcess = new Process();
         pythonProcess.StartInfo = processStartInfo;
 
-        //pythonProcess.OutputDataReceived += (sender, e) => { Debug.Log("Python Output: " + e.Data); };
-        //pythonProcess.ErrorDataReceived += (sender, e) => { Debug.LogError("Python Error: " + e.Data); };
+        pythonProcess.OutputDataReceived += (sender, e) => { Debug.Log("Python Output: " + e.Data); };
+        pythonProcess.ErrorDataReceived += (sender, e) => { Debug.LogError("Python Error: " + e.Data); };
 
 
         pythonProcess.Start();
         pythonProcess.StandardInput.WriteLine("conda activate 3Drummers");
         pythonProcess.StandardInput.WriteLine(startCommand);
 
-        //pythonProcess.BeginOutputReadLine();
-        //pythonProcess.BeginErrorReadLine();
+        pythonProcess.BeginOutputReadLine();
+        pythonProcess.BeginErrorReadLine();
 
     }
 
@@ -88,7 +88,7 @@ public class PythonServerAPI : MonoBehaviour
     private void ConnectToPythonServer() 
     {
         string host = "127.0.0.1";
-        int port = 12345;
+        int port = 2444;
 
         tcpClient = new TcpClient(host, port);
         networkStream = tcpClient.GetStream();

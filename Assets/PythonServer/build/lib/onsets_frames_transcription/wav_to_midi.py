@@ -29,8 +29,8 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
 
-MODEL_DIR = r"onsets_frames_transcription\model_checkpoint"
-CHECKPOINT_PATH = r"onsets_frames_transcription\model_checkpoint\model.ckpt-569400"
+MODEL_DIR = r"onsets_frames_transcription/model_checkpoint"
+CHECKPOINT_PATH = r"onsets_frames_transcription/model_checkpoint/model.ckpt-569400"
 HPARAMS = r""
 LOAD_AUDIO_WITH_LIBROSA = False
 SUFFIX = r""
@@ -55,7 +55,7 @@ def create_example(filepath, sample_rate, load_audio_with_librosa):
     return example_list[0].SerializeToString()
 
 
-def drum_transcription(filepaths_list, target_path):
+def drum_transcription(filepaths_list, target_path, model_path):
     
     data_fn = data.provide_batch
     config = configs.DRUMS_CONFIGURATION
@@ -100,8 +100,8 @@ def drum_transcription(filepaths_list, target_path):
                     transcription_data)
 
                 checkpoint_path = None
-                if CHECKPOINT_PATH:
-                    checkpoint_path = os.path.expanduser(CHECKPOINT_PATH)
+                if model_path:
+                    checkpoint_path = os.path.expanduser(model_path)
                 
                 prediction_list = list(
                     estimator.predict(
@@ -125,7 +125,8 @@ def drum_transcription(filepaths_list, target_path):
 def main(argv):
     filepath = argv[0]
     target_path = argv[1]
-    drum_transcription([filepath], target_path)
+    model_path = argv[2]
+    drum_transcription([filepath], target_path, model_path)
 
 if __name__ == '__main__':
     tf.app.run(main)

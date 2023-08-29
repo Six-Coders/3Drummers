@@ -1,11 +1,17 @@
 README.md
 setup.py
 3Drummers.egg-info/PKG-INFO
+3Drummers.egg-info/PKG-INFO.meta
 3Drummers.egg-info/SOURCES.txt
+3Drummers.egg-info/SOURCES.txt.meta
 3Drummers.egg-info/dependency_links.txt
+3Drummers.egg-info/dependency_links.txt.meta
 3Drummers.egg-info/entry_points.txt
+3Drummers.egg-info/entry_points.txt.meta
 3Drummers.egg-info/requires.txt
+3Drummers.egg-info/requires.txt.meta
 3Drummers.egg-info/top_level.txt
+3Drummers.egg-info/top_level.txt.meta
 demucs/__init__.py
 demucs/__main__.py
 demucs/apply.py
