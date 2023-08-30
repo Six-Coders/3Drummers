@@ -8,6 +8,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
@@ -31,6 +32,8 @@ public class UIMenuController : MonoBehaviour
 
     VisualElement root;
     private VisualElement UIblocker;
+    private VisualElement dialogBackground;
+    private VisualElement dialogPanel;
 
     //Buttons Init
     Button buttonUploadSong;
@@ -38,15 +41,22 @@ public class UIMenuController : MonoBehaviour
     Button buttonTransformToMidi;
     Button buttonMediaPlay;
     Button buttonMediaStop;
+    Button buttonAcceptDialog;
 
     //Dropdowns
     DropdownField dropdownLibrary;
     DropdownField dropdownTrack;
 
+    //ProgressBar
+    ProgressBar progressBar;
+    private float speedBar = 0.1f;
+
     //Labels
     private Label fileName;
     private Label difficulty;
     private Label tempo;
+    private Label indicatorText;
+    private Label textDialog;
 
     private void Start()
     {
@@ -61,12 +71,21 @@ public class UIMenuController : MonoBehaviour
         }
         trackSelected = trackList[0];
         dropdownTrack.value = trackSelected;
+        dropdownTrack.label = trackSelected;
+
+        dialogBackground.visible = false;
+        dialogPanel.visible = false;
+        dialogBackground.SetEnabled(false);
+        dialogPanel.SetEnabled(false);
 
     }
     private void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
         UIblocker = root.Q<VisualElement>("block");
+        dialogBackground = root.Q<VisualElement>("dialogBackground");
+
+        dialogPanel = root.Q<VisualElement>("dialogPanel");
 
         //Buttons:
         buttonUploadSong = root.Q<Button>("buttonUploadSong");
@@ -74,12 +93,14 @@ public class UIMenuController : MonoBehaviour
         buttonTransformToMidi = root.Q<Button>("buttonTransform");
         buttonMediaPlay = root.Q<Button>("buttonPlay");
         buttonMediaStop = root.Q<Button>("buttonStop");
+        buttonAcceptDialog = root.Q<Button>("buttonAccept");
 
         buttonUploadSong.clicked += () => UploadAudiofile();
         buttonSplitTracks.clicked += () => SplitTracks();
         buttonTransformToMidi.clicked += () => TransformToMidi();
         buttonMediaPlay.clicked += () => PlayTrack();
         buttonMediaStop.clicked += () => StopTrack();
+        buttonAcceptDialog.clicked += () => AcceptDialog();
 
         //Deactivate Buttons!
         buttonSplitTracks.SetEnabled(false);
@@ -88,12 +109,48 @@ public class UIMenuController : MonoBehaviour
         fileName = root.Q<Label>("textFilename");
         difficulty = root.Q<Label>("textDifficulty");
         tempo = root.Q<Label>("textTempo");
+        textDialog = root.Q<Label>("textDialog");
 
         //Dropdowns
         dropdownLibrary = root.Q<DropdownField>("dropdownSongs");
         dropdownLibrary.RegisterValueChangedCallback(evt => UpdateDropdownValue(dropdownLibrary.index));
         dropdownTrack = root.Q<DropdownField>("dropdownTrack");
         dropdownTrack.RegisterValueChangedCallback(evt => UpdateTrackValue(dropdownTrack.index));
+
+        //UIBlocker
+        indicatorText = root.Q<Label>("status");
+        progressBar = root.Q < ProgressBar > ("indicator");
+    }
+    private void AcceptDialog() 
+    {
+        dialogBackground.SetEnabled(false);
+        dialogPanel.SetEnabled(false);
+        dialogBackground.visible = false;
+        dialogPanel.visible = false;
+    }
+    public void ShowDialog(string text) 
+    {
+        dialogBackground.SetEnabled(true);
+        dialogPanel.SetEnabled(true);
+        dialogBackground.visible = true;
+        dialogPanel.visible = true;
+        textDialog.text = text;
+    }
+
+    private void FixedUpdate()
+    {
+        if (progressBar != null) 
+        {
+            if (progressBar.value < 100) 
+            {
+                progressBar.value += speedBar;
+            }
+        }
+    }
+
+    public void SetIndicatorText(string text) 
+    { 
+        indicatorText.text = text;
     }
     private void StopTrack() 
     {
@@ -102,16 +159,42 @@ public class UIMenuController : MonoBehaviour
             AudioPlayer.Stop();
         }
     }
-    public void BlockUI(bool activate)
+
+    public void SetProgresBarSpeed(int speed) 
     {
-        UIblocker.SetEnabled(activate);
-        UIblocker.visible = activate;
+        speedBar = speed;
+    }
+    public void BlockUI(bool activate, string nameIndicator="System is loading...")
+    {
+        if (activate)
+        {
+            progressBar.value = 0;
+            UIblocker.SetEnabled(activate);
+            UIblocker.visible = activate;
+            indicatorText.text = nameIndicator;
+        }
+        else 
+        {
+            indicatorText.text = "Done.";
+            progressBar.value = 100;
+            Invoke("ResetUI", 3);
+        }
+    }
+    private void ResetUI() 
+    {
+        UIblocker.SetEnabled(false);
+        UIblocker.visible = false;
+    }
+    public void FinishProgress() 
+    {
+        progressBar.value = 100;
+        indicatorText.text = "Done.";
     }
     private async void TransformToMidi() 
     {
         if (trackSelected != "drums") 
         {
-            //Manejar de ERROR
+            ShowDialog("Drum track is NOT selected.");
             return;
         }
         if (songSelected != null)
@@ -123,14 +206,14 @@ public class UIMenuController : MonoBehaviour
                 {"parameter1",songDir},
                 { "parameter2",modelDirectorie}
             };
-            BlockUI(true);
+            speedBar = 0.2f;
+            BlockUI(true,"Creating the MIDI");
             await pythonServerAPI.CreateCommand("transform_to_midi", parameter);
             BlockUI(false);
             UpdateInfoSong();
         }
         else 
         {
-            //Manejar ERROR
             return;
         }
     }
@@ -149,7 +232,6 @@ public class UIMenuController : MonoBehaviour
 
         dropdownTrack.label = trackSelected;
         dropdownTrack.value = trackSelected;
-        Debug.Log(trackSelected);
     }
     private void UpdateDropdownValue(int index) 
     {
@@ -207,12 +289,12 @@ public class UIMenuController : MonoBehaviour
             }
             else
             {
-                Debug.LogError("The File is not in the right format.");
+                ShowDialog("The File is not in the right format.");
             }
         }
         else
         {
-            Debug.LogError("No File selected.");
+            ShowDialog("No File Selected.");
         }
 
     }
@@ -221,12 +303,10 @@ public class UIMenuController : MonoBehaviour
         if (audioFilePath != null)
         {
             ProcessSong();
-            
-
         }
         else 
         {
-            // Manejar ERROR!
+            ShowDialog("No Song Selected.");
             return;
         }
     }
@@ -248,10 +328,8 @@ public class UIMenuController : MonoBehaviour
             if (audioFileSong == subDirName) 
             {
                 index = songsLibrary.IndexOf(subDirName);
-                Debug.Log("Pasamos por aca MI AMOR");
             }
         }
-        Debug.Log("Valor del index: "+index.ToString());
         songSelected = songDirectories[index];
         string songName = songsLibrary[index];
         dropdownLibrary.value = songName;        
@@ -263,7 +341,8 @@ public class UIMenuController : MonoBehaviour
             {"parameter1",audioFilePath},
             { "parameter2",libPath}
         };
-        BlockUI(true);
+        speedBar = 0.01f;
+        BlockUI(true,"The song is separating into tracks...");
         await pythonServerAPI.CreateCommand("separate_tracks", parameters);
         BlockUI(false);
         UpdateSearchSongs();
@@ -321,6 +400,7 @@ public class UIMenuController : MonoBehaviour
         }
         else 
         {
+            ShowDialog("No Song Selected.");
             return null;
         }
         string songAuxPath = songDirectory.Replace('\\', '/');
@@ -342,7 +422,7 @@ public class UIMenuController : MonoBehaviour
                 }
                 catch (Exception err)
                 {
-                    Debug.Log($"{err.Message}, {err.StackTrace}");
+                    ShowDialog("Unexpected Error. Can't load Audiofile.");
                 }
             };
             audioClip.name = songDir;

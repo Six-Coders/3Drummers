@@ -1,18 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-        <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 481px; width: 372px; flex-direction: column;">
+        <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 482px; width: 506px; flex-direction: column; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px;">
+            <ui:Label tabindex="-1" text="Menu" display-tooltip-when-elided="true" name="Label" class="normalText" style="-unity-text-align: upper-center; font-size: 20px; margin-bottom: 14px;" />
             <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 0; width: 370px;">
                 <ui:Button text="Upload Song" display-tooltip-when-elided="true" name="buttonUploadSong" class="button" style="white-space: nowrap;" />
                 <ui:Label tabindex="-1" text="File:" display-tooltip-when-elided="true" name="textFilename" class="normalText" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: relative; flex-direction: row; height: 0; max-height: initial; max-width: initial;">
                 <ui:Button text="Split Tracks" display-tooltip-when-elided="true" name="buttonSplitTracks" class="button" />
-                <ui:DropdownField label="Drums" index="-1" name="dropdownTrack" class="dropdown" style="position: relative;" />
+                <ui:DropdownField label="Drums" index="-1" name="dropdownTrack" class="dropdown" style="position: relative; flex-basis: 50%; flex-shrink: 1; flex-grow: 1; flex-direction: row; flex-wrap: nowrap;" />
             </ui:VisualElement>
             <ui:Button text="Transform MIDI" display-tooltip-when-elided="true" name="buttonTransform" class="button" />
             <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" />
-            <ui:DropdownField label="Songs" index="-1" name="dropdownSongs" class="dropdown" style="width: 397px; position: relative;" />
+            <ui:DropdownField label="Songs" index="-1" name="dropdownSongs" class="dropdown" style="width: 246px; position: relative; height: 24px;" />
             <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; margin-top: 10px;">
                 <ui:Label tabindex="-1" text="Tempo:" display-tooltip-when-elided="true" name="textTempo" class="normalText" style="position: absolute;" />
                 <ui:Label tabindex="-1" text="Difficulty:" display-tooltip-when-elided="true" name="textDifficulty" class="normalText" style="position: absolute; top: 3px; left: 164px;" />
@@ -26,6 +27,16 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="block" style="flex-grow: 1; background-color: rgb(0, 0, 0); position: absolute; width: 100%; height: 100%;" />
+        <ui:VisualElement name="block" style="flex-grow: 1; background-color: rgb(0, 0, 0); position: absolute; width: 100%; height: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; display: flex;">
+            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="status" class="normalText" style="align-self: center; justify-content: center; top: 45%; font-size: 20px;" />
+            <ui:ProgressBar value="0" name="indicator" style="font-size: 14px; -unity-font-style: bold; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); align-self: center; width: 75%; height: auto; justify-content: flex-start; margin-top: 0; top: 50%; margin-left: 0; margin-right: 0; margin-bottom: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="dialogBackground" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.85); position: absolute; width: 100%; height: 100%; display: flex;">
+            <ui:VisualElement name="dialogPanel" style="flex-grow: 1; background-color: rgb(22, 22, 22); position: absolute; left: 25%; top: 25%; right: 25%; bottom: 25%;">
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); top: 55px; position: absolute; width: 86px; height: 65px; left: 38px; background-image: url(&apos;project://database/Assets/Sprites/error-xxl.png?fileID=2800000&amp;guid=9b75e37b06cb89143beaccec997c3ce7&amp;type=3#error-xxl&apos;);" />
+                <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="textDialog" class="normalText" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; align-self: center; top: 25%;" />
+                <ui:Button text="Accept" display-tooltip-when-elided="true" name="buttonAccept" class="button" style="align-self: center; bottom: auto; top: 60%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

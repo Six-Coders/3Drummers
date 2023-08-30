@@ -5,7 +5,7 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 using System.Net.Sockets;
 using System.Text;
-using UnityEditor.PackageManager;
+
 using System.IO;
 using System.Threading.Tasks;
 using System;
@@ -26,7 +26,7 @@ public class PythonServerAPI : MonoBehaviour
 
     private async void Start()
     {
-        string apiPath = Application.dataPath+ "/PythonServer/3Drummers_api.py";
+        string apiPath = Application.streamingAssetsPath + "/PythonServer/3Drummers_api.py";
         string startServerCommand = $"python \"{apiPath}\"";
         cancellationTokenSource = new CancellationTokenSource();
         // Verificar si la conexión TCP está cerrada
@@ -42,6 +42,7 @@ public class PythonServerAPI : MonoBehaviour
         //loadingIndicator.ShowLoadingIndicator("System loading...");
         uiMenuController.BlockUI(true);
         await WaitForServerReady(cancellationTokenSource.Token);
+
         uiMenuController.BlockUI(false);
         //loadingIndicator.HideLoadingIndicator();
     }
@@ -66,8 +67,8 @@ public class PythonServerAPI : MonoBehaviour
         pythonProcess.StandardInput.WriteLine("conda activate 3Drummers");
         pythonProcess.StandardInput.WriteLine(startCommand);
 
-        pythonProcess.BeginOutputReadLine();
-        pythonProcess.BeginErrorReadLine();
+        //pythonProcess.BeginOutputReadLine();
+        //pythonProcess.BeginErrorReadLine();
 
     }
 

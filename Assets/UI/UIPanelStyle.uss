@@ -55,8 +55,8 @@
 }
 
 .mediaButton {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     -unity-text-align: upper-center;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
