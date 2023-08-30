@@ -57,7 +57,7 @@ public class NewSongButtonController : MonoBehaviour
         };
         await serverAPI.CreateCommand("separate_tracks",parameters);
         loadingIndicator.HideLoadingIndicator();
-        libSongList.SearchSongs();
+        libSongList.UpdateSongs(soundfilePath);
         convertToMidi.TrackProcessed(true);
         dropDown.GetComponent<TMPro.TMP_Dropdown>().interactable = true;
     }

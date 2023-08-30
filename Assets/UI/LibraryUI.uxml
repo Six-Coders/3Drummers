@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
+    <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 788px; width: 460px; flex-direction: column;">
+        <ui:Button text="Upload Song" display-tooltip-when-elided="true" name="buttonUploadSong" class="button" style="white-space: nowrap;" />
+        <ui:Label tabindex="-1" text="File:" display-tooltip-when-elided="true" name="textFilename" class="normalText" />
+        <ui:Button text="Split Tracks" display-tooltip-when-elided="true" name="buttonSplitTracks" class="button" />
+        <ui:Button text="Transform MIDI" display-tooltip-when-elided="true" name="buttonTransform" class="button" />
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: column;">
+            <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" />
+            <ui:DropdownField label="Songs" index="-1" name="dropdownSongs" class="dropdown" style="width: 397px; position: relative;" />
+        </ui:VisualElement>
+        <ui:Label tabindex="-1" text="Difficulty:" display-tooltip-when-elided="true" name="textDifficulty" class="normalText" />
+        <ui:Label tabindex="-1" text="Tempo:" display-tooltip-when-elided="true" name="textTempo" class="normalText" />
+        <ui:Button text="Play" display-tooltip-when-elided="true" name="buttonPlay" class="mediaButton" />
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+            <ui:DropdownField label="Drums" index="-1" name="dropdownTrack" class="dropdown" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

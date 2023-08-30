@@ -18,7 +18,7 @@ public class PythonServerAPI : MonoBehaviour
     private Process pythonProcess;
     private TcpClient tcpClient;
     private NetworkStream networkStream;
-    public LoadingIndicator loadingIndicator;
+    //public LoadingIndicator loadingIndicator;
     private bool serverBussy = false;
     private CancellationTokenSource cancellationTokenSource;
 
@@ -37,17 +37,9 @@ public class PythonServerAPI : MonoBehaviour
         StartPythonServer(startServerCommand);
         */
 
-        loadingIndicator.ShowLoadingIndicator("System loading...");
+        //loadingIndicator.ShowLoadingIndicator("System loading...");
         await WaitForServerReady(cancellationTokenSource.Token);
-        loadingIndicator.HideLoadingIndicator();
-
-        //Debug.Log("Probando CreateCommand..");
-        //await CreateCommand("separate_tracks");
-        //Debug.Log("Termino CreateCommand jeje");
-        //Testear SERVIDOR
-        
-
-        //CloseConnection();
+        //loadingIndicator.HideLoadingIndicator();
     }
 
     public void StartPythonServer(string startCommand) 

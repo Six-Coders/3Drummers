@@ -63,7 +63,7 @@ public class ConvertToMidi : MonoBehaviour
         {
             await pythonServerAPI.CreateCommand(command, parameter);
             loadingIndicator.HideLoadingIndicator();
-            songList.SearchSongs();
+            songList.UpdateSongs(songDirectory);
         }
         else 
         {
