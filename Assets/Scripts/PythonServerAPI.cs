@@ -22,23 +22,27 @@ public class PythonServerAPI : MonoBehaviour
     private bool serverBussy = false;
     private CancellationTokenSource cancellationTokenSource;
 
+    public UIMenuController uiMenuController;
+
     private async void Start()
     {
         string apiPath = Application.dataPath+ "/PythonServer/3Drummers_api.py";
         string startServerCommand = $"python \"{apiPath}\"";
         cancellationTokenSource = new CancellationTokenSource();
         // Verificar si la conexión TCP está cerrada
-        /*
+        
         if (tcpClient != null && tcpClient.Connected)
         {
             CloseConnection();
         }
   
         StartPythonServer(startServerCommand);
-        */
+
 
         //loadingIndicator.ShowLoadingIndicator("System loading...");
+        uiMenuController.BlockUI(true);
         await WaitForServerReady(cancellationTokenSource.Token);
+        uiMenuController.BlockUI(false);
         //loadingIndicator.HideLoadingIndicator();
     }
 

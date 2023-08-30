@@ -30,12 +30,14 @@ public class UIMenuController : MonoBehaviour
     private AudioClip track = null;
 
     VisualElement root;
+    private VisualElement UIblocker;
 
     //Buttons Init
     Button buttonUploadSong;
     Button buttonSplitTracks;
     Button buttonTransformToMidi;
     Button buttonMediaPlay;
+    Button buttonMediaStop;
 
     //Dropdowns
     DropdownField dropdownLibrary;
@@ -59,21 +61,25 @@ public class UIMenuController : MonoBehaviour
         }
         trackSelected = trackList[0];
         dropdownTrack.value = trackSelected;
+
     }
     private void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
+        UIblocker = root.Q<VisualElement>("block");
 
         //Buttons:
         buttonUploadSong = root.Q<Button>("buttonUploadSong");
         buttonSplitTracks = root.Q<Button>("buttonSplitTracks");
         buttonTransformToMidi = root.Q<Button>("buttonTransform");
         buttonMediaPlay = root.Q<Button>("buttonPlay");
+        buttonMediaStop = root.Q<Button>("buttonStop");
 
         buttonUploadSong.clicked += () => UploadAudiofile();
         buttonSplitTracks.clicked += () => SplitTracks();
         buttonTransformToMidi.clicked += () => TransformToMidi();
         buttonMediaPlay.clicked += () => PlayTrack();
+        buttonMediaStop.clicked += () => StopTrack();
 
         //Deactivate Buttons!
         buttonSplitTracks.SetEnabled(false);
@@ -88,6 +94,18 @@ public class UIMenuController : MonoBehaviour
         dropdownLibrary.RegisterValueChangedCallback(evt => UpdateDropdownValue(dropdownLibrary.index));
         dropdownTrack = root.Q<DropdownField>("dropdownTrack");
         dropdownTrack.RegisterValueChangedCallback(evt => UpdateTrackValue(dropdownTrack.index));
+    }
+    private void StopTrack() 
+    {
+        if (AudioPlayer.isPlaying) 
+        {
+            AudioPlayer.Stop();
+        }
+    }
+    public void BlockUI(bool activate)
+    {
+        UIblocker.SetEnabled(activate);
+        UIblocker.visible = activate;
     }
     private async void TransformToMidi() 
     {
@@ -105,7 +123,9 @@ public class UIMenuController : MonoBehaviour
                 {"parameter1",songDir},
                 { "parameter2",modelDirectorie}
             };
+            BlockUI(true);
             await pythonServerAPI.CreateCommand("transform_to_midi", parameter);
+            BlockUI(false);
             UpdateInfoSong();
         }
         else 
@@ -183,11 +203,7 @@ public class UIMenuController : MonoBehaviour
                 audiofileName = paths[0].Replace('\\', '/');
                 audioFilePath = audiofileName;
                 fileName.text = "File: "+Path.GetFileNameWithoutExtension(audiofileName);
-
                 buttonSplitTracks.SetEnabled(true);
-                //controller.ActivateButton(true);
-                //convertToMidi.SetDrumsPath(fileName);
-                //fileText.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
             }
             else
             {
@@ -238,14 +254,7 @@ public class UIMenuController : MonoBehaviour
         Debug.Log("Valor del index: "+index.ToString());
         songSelected = songDirectories[index];
         string songName = songsLibrary[index];
-        dropdownLibrary.value = songName;
-
-        //songSelected = songDirectories[0];
-        //string firstSong = songsLibrary[0];
-
-        //dropdownLibrary.value = firstSong;
-        //SetDifficultyAndTempo();
-        
+        dropdownLibrary.value = songName;        
     }
     private async void ProcessSong() 
     {
@@ -254,7 +263,9 @@ public class UIMenuController : MonoBehaviour
             {"parameter1",audioFilePath},
             { "parameter2",libPath}
         };
+        BlockUI(true);
         await pythonServerAPI.CreateCommand("separate_tracks", parameters);
+        BlockUI(false);
         UpdateSearchSongs();
     }
     private void SearchSongs() 
