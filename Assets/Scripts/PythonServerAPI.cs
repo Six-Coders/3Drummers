@@ -67,8 +67,8 @@ public class PythonServerAPI : MonoBehaviour
         pythonProcess.StandardInput.WriteLine("conda activate 3Drummers");
         pythonProcess.StandardInput.WriteLine(startCommand);
 
-        //pythonProcess.BeginOutputReadLine();
-        //pythonProcess.BeginErrorReadLine();
+        pythonProcess.BeginOutputReadLine();
+        pythonProcess.BeginErrorReadLine();
 
     }
 

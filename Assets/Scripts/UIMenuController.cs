@@ -200,7 +200,7 @@ public class UIMenuController : MonoBehaviour
         if (songSelected != null)
         {
             string songDir = songSelected.Replace("\\", "/");
-            string modelDirectorie = Application.dataPath.Replace('\\', '/') + "/PythonServer/onsets_frames_transcription/model_checkpoint/model.ckpt-569400";
+            string modelDirectorie = Application.streamingAssetsPath.Replace('\\', '/') + "/PythonServer/onsets_frames_transcription/model_checkpoint/model.ckpt-569400";
             Dictionary<string, string> parameter = new Dictionary<string, string>()
             {
                 {"parameter1",songDir},
