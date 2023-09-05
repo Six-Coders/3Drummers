@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
+    <ui:VisualElement name="layer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; justify-content: space-around;">
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="name" class="normalText" style="width: 33%; align-self: center;" />
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="difficulty" class="normalText" style="width: 33%; align-self: center;" />
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="tempo" class="normalText" style="width: 33%; align-self: center;" />
+    </ui:VisualElement>
+</ui:UXML>
