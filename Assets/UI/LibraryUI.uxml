@@ -13,6 +13,7 @@
             </ui:VisualElement>
             <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 14px; -unity-font-style: bold; bottom: auto; position: absolute; top: 35%; left: auto;" />
             <ui:ListView focusable="true" name="libraryListView" show-border="true" show-alternating-row-backgrounds="All" horizontal-scrolling="false" header-title="Library" reorder-mode="Animated" show-foldout-header="false" show-add-remove-footer="false" style="height: auto; max-height: none; background-color: rgb(24, 24, 24); min-height: auto; left: auto; top: 45%; bottom: auto; position: relative; width: auto;" />
+            <ui:Button text="Play in 3D" display-tooltip-when-elided="true" name="button3DVisualizer" class="button" style="position: absolute; bottom: 5%; left: 25%;" />
         </ui:VisualElement>
         <ui:VisualElement name="MediaPlayerUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); position: absolute; height: 56px; width: 212px; top: 88%; left: 55%; flex-direction: row; justify-content: center; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
             <ui:Button display-tooltip-when-elided="true" name="buttonPlay" class="mediaButton" style="-unity-background-image-tint-color: rgb(0, 0, 0); align-self: center; -unity-background-scale-mode: stretch-to-fill;">

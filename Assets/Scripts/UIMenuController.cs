@@ -1,4 +1,4 @@
-using SFB;
+using SFB;  // Using a file browser library
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,33 +19,37 @@ public class UIMenuController : MonoBehaviour
 {
     public AudioSource AudioPlayer;
     public DrumController drumController;
-    public List<SongData> songInfo = new List<SongData>();
+    public List<SongData> songInfo = new List<SongData>();  // List to store song data
 
+    // Paths and variables for managing audio files and libraries
     private string audioFilePath;
     private string libPath;
     private string unityPath;
     private string dataPersistentPath;
 
-    private string songSelected; //Lista de canciones
-    private string trackSelected; // Drum; no_drums
+    private string songSelected; // Currently selected song
+    private string trackSelected; // Currently selected track (drums or no_drums)
 
-    private List<string> songsLibrary = new List<string>();
-    private List<string> songDirectories = new List<string>();
-    private List<string> requiredFiles = new List<string>() { "drums.wav", "no_drums.wav", "drums.midi", "data.json" };
-    private List<string> trackList = new List<string>() { "drums", "no_drums" };
+    private List<string> songsLibrary = new List<string>();  // List of song names in the library
+    private List<string> songDirectories = new List<string>();  // List of song directories
+    private List<string> requiredFiles = new List<string>() { "drums.wav", "no_drums.wav", "drums.midi", "data.json" };  // Required files for each song
+    private List<string> trackList = new List<string>() { "drums", "no_drums" };  // List of available tracks
 
-    private AudioClip track = null;
+    private AudioClip track = null;  // Reference to the currently selected audio track
 
+    // Unity UI elements
     private VisualElement root;
     private DropdownField trackDropdown;
     private Button uploadButton;
     private Button processButton;
-
+    private Button mediaPlayButton;
+    private Button mediaStopButton;
+    private Button mediaPauseButton;
+    private Button modelVisualizerButton;
     private ListView libraryListView;
+    private bool bussy = false;  // Indicates if a background process is busy
 
-    private bool bussy = false;
-
-    //Labels
+    // Labels
     private Label fileName;
 
     private void Start()
@@ -54,56 +58,91 @@ public class UIMenuController : MonoBehaviour
         unityPath = Application.streamingAssetsPath;
         dataPersistentPath = Application.persistentDataPath;
         libPath = Application.persistentDataPath + LibraryName;
-        RefreshLibrary();
+        RefreshLibrary();  // Initialize the song library
     }
 
     private void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
+
+        // Get references to UI elements and set up event handlers
         uploadButton = root.Q<Button>("buttonUpload");
         processButton = root.Q<Button>("buttonProcess");
+        mediaPlayButton = root.Q<Button>("buttonPlay");
+        mediaStopButton = root.Q<Button>("buttonStop");
+        mediaPauseButton = root.Q<Button>("buttonPause");
+
+        modelVisualizerButton = root.Q<Button>("button3DVisualizer");
+
         libraryListView = root.Q<ListView>("libraryListView");
         trackDropdown = root.Q<DropdownField>("trackSelection");
         trackDropdown.choices.Clear();
         trackDropdown.choices = trackList;
         trackDropdown.index = 0;
+        trackSelected = trackDropdown.choices[0];
 
+        // Set up event handlers for UI buttons
         uploadButton.clicked += () => UploadAudiofile();
         processButton.SetEnabled(false);
         processButton.clicked += () => StartProcessing();
-        libraryListView.itemsChosen += (evt) => Debug.Log(evt.First().ToString());
+        mediaPlayButton.clicked += () => PlayTrack();
+        mediaStopButton.clicked += () => StopTrack();
+        modelVisualizerButton.clicked += () => StartVisualization();
+
+        // Set up event handler for selecting a song in the library
+        libraryListView.itemsChosen += async (evt) =>
+        {
+            songSelected = songDirectories[libraryListView.selectedIndex];
+            libraryListView.SetEnabled(false);
+            mediaPlayButton.SetEnabled(false);
+            modelVisualizerButton.SetEnabled(false);
+            track = await LoadAudioClip();  // Load the selected audio clip
+            mediaPlayButton.SetEnabled(true);
+            libraryListView.SetEnabled(true);
+            modelVisualizerButton.SetEnabled(true);
+        };
+    }
+
+    private void StartVisualization() 
+    {
+        if (track != null) 
+        {
+            drumController.SetMidiPathFile(songSelected + "/drums.midi");
+            PlayTrack();
+            drumController.StartInterpretation();
+        }
     }
 
     private async void StartProcessing() 
     {
         if (audioFilePath != null) 
         {
-            if (!bussy) 
+            if (!bussy)  // Check if a background process is not already running
             {
                 bussy = true;
-                Debug.Log("Empezo el webeo");
-                await Task.Run(() => { ProcessSong(); }) ;
+                processButton.SetEnabled(false);
+                await Task.Run(() => { ProcessSong(); }) ;  // Start a background task to process the song
                 bussy = false;
-                
+                processButton.SetEnabled(true);
             }
             else 
             {
-                Debug.Log("Estoy ocupao");
+                return;  // Do nothing if a process is already running
             }
-
         }
     }
 
-
+    // Method to process a song using a Python script
     public void ProcessSong()
     {
         bussy = true;
         string command = "python \"";
-        command += unityPath + "/Python/main.py\" " + "\""+audioFilePath+"\"";
+
+        // Construct the Python command
+        command += unityPath + "/Python/main.py\" " + "\"" + audioFilePath + "\"";
         ProcessStartInfo processStartInfo = new ProcessStartInfo();
         processStartInfo.FileName = "cmd.exe";
         processStartInfo.RedirectStandardInput = true;
-        processStartInfo.RedirectStandardOutput = true;
         processStartInfo.UseShellExecute = false;
         processStartInfo.CreateNoWindow = true;
         Process pythonProcess = new Process();
@@ -114,39 +153,33 @@ public class UIMenuController : MonoBehaviour
         string modelDirectorie = unityPath.Replace('\\', '/') + "\"/Python/onsets_frames_transcription/model_checkpoint/model.ckpt-569400\"";
         command += " \"" + modelDirectorie + "\"";
         pythonProcess.StandardInput.WriteLine(command);
+        pythonProcess.StandardInput.Close();
         pythonProcess.WaitForExit();
+        pythonProcess.Close();
     }
+
     private void RefreshLibrary() 
     {
-        SearchSongs();
+        SearchSongs();  // Find and populate available songs
         libraryListView.Clear();
-        
-
         var listItem = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/SongUI.uxml");
-
-
         Func<VisualElement> makeItem = () => listItem.Instantiate();
-
         Action<VisualElement, int> bindItem = (e, i) => 
         {
-            //(e as Label).text = songsLibrary[i];
             var name = e.Q<Label>("name");
             var difficulty = e.Q<Label>("difficulty");
             var tempo = e.Q<Label>("tempo");
-
             name.text = songsLibrary[i];
             difficulty.text = songInfo[i].difficulty;
             tempo.text = songInfo[i].tempo;
-
             e.style.backgroundColor = Color.gray;
         };
-
         libraryListView.makeItem = makeItem;
         libraryListView.bindItem = bindItem;
         libraryListView.itemsSource = songsLibrary;
         libraryListView.selectionType = SelectionType.Single;
+        libraryListView.selectedIndex = 0;
     }
-
 
     private void StopTrack() 
     {
@@ -166,8 +199,8 @@ public class UIMenuController : MonoBehaviour
         }
         else
         {
+            // Handle the case where required files are missing
         }
-
     }
 
     private bool CheckFiles(string path)
@@ -189,7 +222,7 @@ public class UIMenuController : MonoBehaviour
         string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "", false);
         if (paths.Length > 0)
         {
-            //Verificar el directorio
+            // Verify the selected directory and file format
             Match match = Regex.Match(paths[0], pattern: @".+\\(.*)\.(?:mp3|wav|flac|ogg)$");
             if (match.Success)
             {
@@ -207,8 +240,8 @@ public class UIMenuController : MonoBehaviour
         {
             processButton.SetEnabled(false);
         }
-
     }
+
     private void SearchSongs() 
     {
         songDirectories.Clear();
@@ -234,9 +267,8 @@ public class UIMenuController : MonoBehaviour
         SetDifficultyAndTempo();
     }
 
-    private async void PlayTrack()
+    private void PlayTrack()
     {
-        track = await LoadAudioClip();
         if (track != null)
         {
             AudioPlayer.clip = track;
@@ -248,9 +280,10 @@ public class UIMenuController : MonoBehaviour
         }
     }
 
+    // Load an audio clip asynchronously
     async Task<AudioClip> LoadAudioClip()
     {
-        string songDirectory;
+        string songDirectory = null;
         if (songSelected != null)
         {
             if (trackSelected != null)
@@ -261,7 +294,6 @@ public class UIMenuController : MonoBehaviour
             {
                 return null;
             }
-            
         }
         else 
         {
@@ -269,6 +301,7 @@ public class UIMenuController : MonoBehaviour
         }
         string songAuxPath = songDirectory.Replace('\\', '/');
         string songDir = songAuxPath.Replace("/", "//");
+        Debug.Log("Song Dir: " + songDir);
         if (songDir != null)
         {
             AudioClip audioClip = null;
@@ -286,6 +319,7 @@ public class UIMenuController : MonoBehaviour
                 }
                 catch (Exception err)
                 {
+                    // Handle any exceptions
                 }
             };
             audioClip.name = songDir;
