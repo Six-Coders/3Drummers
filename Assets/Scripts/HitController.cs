@@ -7,7 +7,7 @@ public class HitController : MonoBehaviour
     public Material material;
     private float currentAlpha = 0f;
     private Color color;
-    public float SpeedChange = 5f;
+    public float SpeedChange = 4f;
     void Update()
     {
         material.SetColor("_color", color);

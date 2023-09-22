@@ -1,30 +1,42 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
-    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-        <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 431px; width: 319px; flex-direction: column; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px;">
-            <ui:Label tabindex="-1" text="Menu" display-tooltip-when-elided="true" name="menuTitle" class="normalText" style="-unity-text-align: upper-center; font-size: 20px; margin-bottom: 14px;" />
-            <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: auto; width: auto; min-height: auto; min-width: auto; position: absolute; bottom: auto; top: 10%;">
+    <Style src="project://database/Assets/UI/Resources/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; flex-shrink: 1; flex-wrap: nowrap; align-self: auto; justify-content: flex-start; align-items: flex-start;">
+        <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 100%; width: 12%; flex-direction: column; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px; flex-shrink: initial; flex-basis: auto;">
+            <ui:Label tabindex="-1" text="Menu" display-tooltip-when-elided="true" name="menuTitle" class="normalText" style="-unity-text-align: upper-center; font-size: 32px; margin-bottom: 14px; -unity-font-style: bold;" />
+            <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10%; width: auto; min-height: auto; min-width: auto; position: relative; bottom: auto; top: auto; max-width: none; max-height: none; flex-shrink: 1;">
                 <ui:Button text="Upload Song" display-tooltip-when-elided="true" name="buttonUpload" class="button" />
-                <ui:Label tabindex="-1" text="File:" display-tooltip-when-elided="true" name="textFilename" class="normalText" style="height: 27px; width: 162px;" />
+                <ui:Label tabindex="-1" text="File:" display-tooltip-when-elided="true" name="textFilename" class="normalText" style="height: 27px; width: 162px; font-size: 20px;" />
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: auto; bottom: 70%; position: absolute;">
+            <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10%; bottom: auto; position: relative; width: 100%; flex-shrink: 1; align-self: center; justify-content: flex-start;">
                 <ui:Button text="Process Song" display-tooltip-when-elided="true" name="buttonProcess" class="button" style="white-space: nowrap;" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="trackSelection" tabindex="0" style="height: auto; width: 45%; white-space: normal; flex-direction: row; flex-shrink: 0; flex-basis: auto; flex-wrap: nowrap; flex-grow: 0; justify-content: flex-start; align-items: stretch; min-width: initial; min-height: initial; color: rgb(255, 255, 255); -unity-text-align: upper-left; text-overflow: clip;" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="trackSelection" tabindex="0" style="height: 50%; width: 45%; white-space: normal; flex-direction: row; flex-shrink: 0; flex-basis: auto; flex-wrap: nowrap; flex-grow: 0; justify-content: flex-start; align-items: stretch; min-width: initial; min-height: initial; color: rgb(255, 255, 255); -unity-text-align: upper-left; text-overflow: clip; margin-top: 4px; margin-bottom: 4px; font-size: 16px; -unity-font-style: bold;" />
             </ui:VisualElement>
-            <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 14px; -unity-font-style: bold; bottom: auto; position: absolute; top: 35%; left: auto;" />
-            <ui:ListView focusable="true" name="libraryListView" show-border="true" show-alternating-row-backgrounds="All" horizontal-scrolling="false" header-title="Library" reorder-mode="Animated" show-foldout-header="false" show-add-remove-footer="false" style="height: auto; max-height: none; background-color: rgb(24, 24, 24); min-height: auto; left: auto; top: 45%; bottom: auto; position: relative; width: auto;" />
-            <ui:Button text="Play in 3D" display-tooltip-when-elided="true" name="button3DVisualizer" class="button" style="position: absolute; bottom: 5%; left: 25%;" />
+            <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 32px; -unity-font-style: bold; bottom: auto; position: relative; top: auto; left: auto; -unity-text-align: upper-center;" />
+            <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-shrink: initial; flex-direction: row; align-items: stretch; align-self: stretch; justify-content: space-between; margin-left: 1px; margin-right: 1px; margin-top: 20px; margin-bottom: 1px;">
+                <ui:Label tabindex="-1" text="Song" display-tooltip-when-elided="true" name="Label" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
+                <ui:Label tabindex="-1" text="Difficulty" display-tooltip-when-elided="true" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
+                <ui:Label tabindex="-1" text="Tempo" display-tooltip-when-elided="true" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
+            </ui:VisualElement>
+            <ui:ListView focusable="true" name="libraryListView" show-border="true" show-alternating-row-backgrounds="All" horizontal-scrolling="false" header-title="Library" reorder-mode="Animated" show-foldout-header="false" show-add-remove-footer="false" fixed-item-height="1" virtualization-method="DynamicHeight" style="flex-grow: initial; align-items: stretch; justify-content: space-around;" />
         </ui:VisualElement>
-        <ui:VisualElement name="MediaPlayerUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); position: absolute; height: 56px; width: 212px; top: 88%; left: 55%; flex-direction: row; justify-content: center; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-            <ui:Button display-tooltip-when-elided="true" name="buttonPlay" class="mediaButton" style="-unity-background-image-tint-color: rgb(0, 0, 0); align-self: center; -unity-background-scale-mode: stretch-to-fill;">
-                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/playButton.png?fileID=2800000&amp;guid=c3854f1bd2ea02b4f911b841829c84b8&amp;type=3#playButton&apos;); -unity-background-image-tint-color: rgb(255, 255, 255);" />
-            </ui:Button>
-            <ui:Button display-tooltip-when-elided="true" name="buttonPause" class="mediaButton" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
-                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/pause.png?fileID=2800000&amp;guid=753f49b413efbeb43a229a909a59b324&amp;type=3#pause&apos;);" />
-            </ui:Button>
-            <ui:Button display-tooltip-when-elided="true" name="buttonStop" class="mediaButton">
-                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/media-stop.png?fileID=2800000&amp;guid=fcea3940662b98e4281620dd875472b3&amp;type=3#media-stop&apos;);" />
-            </ui:Button>
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: center; flex-direction: column; width: 45%; min-width: initial; min-height: initial; justify-content: flex-start; align-items: center;">
+            <ui:VisualElement name="MediaPlayerUI" focusable="false" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: relative; height: auto; width: 20%; top: auto; left: auto; flex-direction: row; justify-content: center; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; bottom: auto; margin-top: 75%; align-self: center; margin-left: 10%; margin-right: 10%; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-items: stretch;">
+                <ui:Button display-tooltip-when-elided="true" name="buttonDecrease" class="mediaButton" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">
+                    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/increaseIcon.png?fileID=2800000&amp;guid=bcbf590227ec7ae4f99dbc0d65c5cbbc&amp;type=3#increaseIcon&apos;); scale: -1 1; margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+                </ui:Button>
+                <ui:Button display-tooltip-when-elided="true" name="buttonPlay" class="mediaButton" style="-unity-background-image-tint-color: rgb(0, 0, 0); align-self: center; -unity-background-scale-mode: stretch-to-fill;">
+                    <ui:VisualElement name="iconPlay" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/playIcon.png?fileID=2800000&amp;guid=abb72cf65159b884581d35dffa713044&amp;type=3#playIcon&apos;); margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+                </ui:Button>
+                <ui:Button display-tooltip-when-elided="true" name="buttonStop" class="mediaButton">
+                    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/stopIcon.png?fileID=2800000&amp;guid=61464c49b8fefd949a7c5a98976257d9&amp;type=3#stopIcon&apos;); margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+                </ui:Button>
+                <ui:Button display-tooltip-when-elided="true" name="buttonIncrease" class="mediaButton" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+                    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/increaseIcon.png?fileID=2800000&amp;guid=bcbf590227ec7ae4f99dbc0d65c5cbbc&amp;type=3#increaseIcon&apos;); margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+                </ui:Button>
+            </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Button display-tooltip-when-elided="true" name="buttonSettings" class="buttonPanel" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/settingsIcon.png?fileID=2800000&amp;guid=dfe6fcd782565f4418bf5055d5005579&amp;type=3#settingsIcon&apos;);" />
+        </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

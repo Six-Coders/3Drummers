@@ -4,11 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,37 +14,49 @@ using Debug = UnityEngine.Debug;
 
 public class UIMenuController : MonoBehaviour
 {
-    public AudioSource AudioPlayer;
-    public DrumController drumController;
-    public List<SongData> songInfo = new List<SongData>();  // List to store song data
+    [SerializeField] public AudioSource AudioPlayer;
+    [SerializeField] public DrumController drumController;
+    [SerializeField] public List<SongData> songInfo = new List<SongData>();  // List to store song data
+    [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
 
     // Paths and variables for managing audio files and libraries
     private string audioFilePath;
     private string libPath;
     private string unityPath;
     private string dataPersistentPath;
+    private int songSelectedIndex = 0;
 
     private string songSelected; // Currently selected song
     private string trackSelected; // Currently selected track (drums or no_drums)
 
-    private List<string> songsLibrary = new List<string>();  // List of song names in the library
-    private List<string> songDirectories = new List<string>();  // List of song directories
-    private List<string> requiredFiles = new List<string>() { "drums.wav", "no_drums.wav", "drums.midi", "data.json" };  // Required files for each song
-    private List<string> trackList = new List<string>() { "drums", "no_drums" };  // List of available tracks
+    [SerializeField] private List<string> songsLibrary = new List<string>();  // List of song names in the library
+    [SerializeField] private List<string> songDirectories = new List<string>();  // List of song directories
+    [SerializeField] private List<string> requiredFiles = new List<string>() { "drums.wav", "no_drums.wav", "drums.midi", "data.json" };  // Required files for each song
+    [SerializeField] private List<string> trackList = new List<string>() { "drums", "no_drums" };  // List of available tracks
 
     private AudioClip track = null;  // Reference to the currently selected audio track
+    private bool audioIsPlaying = false;
 
     // Unity UI elements
-    private VisualElement root;
-    private DropdownField trackDropdown;
-    private Button uploadButton;
-    private Button processButton;
-    private Button mediaPlayButton;
-    private Button mediaStopButton;
-    private Button mediaPauseButton;
-    private Button modelVisualizerButton;
-    private ListView libraryListView;
-    private bool bussy = false;  // Indicates if a background process is busy
+    [SerializeField] private VisualElement root;
+    [SerializeField] private DropdownField trackDropdown;
+    [SerializeField] private Button uploadButton;
+    [SerializeField] private Button processButton;
+    [SerializeField] private Button mediaPlayButton;
+    [SerializeField] private Button mediaStopButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private VisualElement playIconElement;
+    [SerializeField] private ListView libraryListView;
+    [SerializeField] private bool bussy = false;  // Indicates if a background process is busy
+
+    public Sprite playIcon;
+    public Sprite pauseIcon;
+    private StyleBackground playIconBackground;
+    private StyleBackground pauseIconBackground;
+
+    // Colors!
+    private Color selectedSongColor = new Color32(130, 127, 160, 255);
+    private Color unselectedSongColor = new Color32(29, 29, 29, 255);
 
     // Labels
     private Label fileName;
@@ -58,7 +67,20 @@ public class UIMenuController : MonoBehaviour
         unityPath = Application.streamingAssetsPath;
         dataPersistentPath = Application.persistentDataPath;
         libPath = Application.persistentDataPath + LibraryName;
+        playIconBackground = new StyleBackground(playIcon);
+        pauseIconBackground = new StyleBackground(pauseIcon);
         RefreshLibrary();  // Initialize the song library
+    }
+    private void Update()
+    {
+        if (AudioPlayer.isPlaying)
+        {
+            playIconElement.style.backgroundImage = pauseIconBackground;
+        }
+        else
+        {
+            playIconElement.style.backgroundImage = playIconBackground;
+        }
     }
 
     private void OnEnable()
@@ -70,9 +92,9 @@ public class UIMenuController : MonoBehaviour
         processButton = root.Q<Button>("buttonProcess");
         mediaPlayButton = root.Q<Button>("buttonPlay");
         mediaStopButton = root.Q<Button>("buttonStop");
-        mediaPauseButton = root.Q<Button>("buttonPause");
-
-        modelVisualizerButton = root.Q<Button>("button3DVisualizer");
+        
+        playIconElement = root.Q<VisualElement>("iconPlay");
+        playIconElement.style.backgroundImage = playIconBackground;
 
         libraryListView = root.Q<ListView>("libraryListView");
         trackDropdown = root.Q<DropdownField>("trackSelection");
@@ -80,6 +102,11 @@ public class UIMenuController : MonoBehaviour
         trackDropdown.choices = trackList;
         trackDropdown.index = 0;
         trackSelected = trackDropdown.choices[0];
+        trackDropdown.RegisterValueChangedCallback(async v => {
+            trackSelected = v.newValue;
+            AudioPlayer.Stop();
+            track = await LoadAudioClip();
+        });
 
         // Set up event handlers for UI buttons
         uploadButton.clicked += () => UploadAudiofile();
@@ -87,30 +114,47 @@ public class UIMenuController : MonoBehaviour
         processButton.clicked += () => StartProcessing();
         mediaPlayButton.clicked += () => PlayTrack();
         mediaStopButton.clicked += () => StopTrack();
-        modelVisualizerButton.clicked += () => StartVisualization();
 
         // Set up event handler for selecting a song in the library
         libraryListView.itemsChosen += async (evt) =>
         {
-            songSelected = songDirectories[libraryListView.selectedIndex];
+            
             libraryListView.SetEnabled(false);
             mediaPlayButton.SetEnabled(false);
-            modelVisualizerButton.SetEnabled(false);
+            songSelected = songDirectories[libraryListView.selectedIndex];
+            if (AudioPlayer.isPlaying) 
+            {
+                StopTrack();
+                drumController.SetMidiPathFile(songSelected+ "/drums.midi");
+
+            }
+            
             track = await LoadAudioClip();  // Load the selected audio clip
+            songSelectedIndex = libraryListView.selectedIndex;
+
+            Action<VisualElement, int> bindItem = (e, i) =>
+            {
+                var name = e.Q<Label>("name");
+                var difficulty = e.Q<Label>("difficulty");
+                var tempo = e.Q<Label>("tempo");
+                var background = e.Q<VisualElement>("layerBackground");
+                if (i == songSelectedIndex)
+                {
+                    background.style.backgroundColor = selectedSongColor;
+                }
+                else 
+                {
+                    background.style.backgroundColor = unselectedSongColor;
+                }
+                name.text = songsLibrary[i];
+                difficulty.text = songInfo[i].difficulty;
+                tempo.text = songInfo[i].tempo;
+            };
+            libraryListView.bindItem += bindItem;
+            drumController.SetMidiPathFile(songSelected + "/drums.midi");
             mediaPlayButton.SetEnabled(true);
             libraryListView.SetEnabled(true);
-            modelVisualizerButton.SetEnabled(true);
         };
-    }
-
-    private void StartVisualization() 
-    {
-        if (track != null) 
-        {
-            drumController.SetMidiPathFile(songSelected + "/drums.midi");
-            PlayTrack();
-            drumController.StartInterpretation();
-        }
     }
 
     private async void StartProcessing() 
@@ -121,9 +165,11 @@ public class UIMenuController : MonoBehaviour
             {
                 bussy = true;
                 processButton.SetEnabled(false);
+                alertDialog.CreateDialog("The file is processing", "This may take a while.");
                 await Task.Run(() => { ProcessSong(); }) ;  // Start a background task to process the song
                 bussy = false;
                 processButton.SetEnabled(true);
+                alertDialog.CreateDialog("The file is processed", "The song is ready and loaded in the library.");
             }
             else 
             {
@@ -137,8 +183,6 @@ public class UIMenuController : MonoBehaviour
     {
         bussy = true;
         string command = "python \"";
-
-        // Construct the Python command
         command += unityPath + "/Python/main.py\" " + "\"" + audioFilePath + "\"";
         ProcessStartInfo processStartInfo = new ProcessStartInfo();
         processStartInfo.FileName = "cmd.exe";
@@ -158,9 +202,9 @@ public class UIMenuController : MonoBehaviour
         pythonProcess.Close();
     }
 
-    private void RefreshLibrary() 
+    private async void RefreshLibrary() 
     {
-        SearchSongs();  // Find and populate available songs
+        SearchSongs();
         libraryListView.Clear();
         var listItem = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/SongUI.uxml");
         Func<VisualElement> makeItem = () => listItem.Instantiate();
@@ -169,16 +213,29 @@ public class UIMenuController : MonoBehaviour
             var name = e.Q<Label>("name");
             var difficulty = e.Q<Label>("difficulty");
             var tempo = e.Q<Label>("tempo");
+            var background = e.Q<VisualElement>("layerBackground");
+            if (i == songSelectedIndex)
+            {
+                background.style.backgroundColor = selectedSongColor;
+            }
+            else 
+            {
+                background.style.backgroundColor = unselectedSongColor;
+            }
             name.text = songsLibrary[i];
             difficulty.text = songInfo[i].difficulty;
             tempo.text = songInfo[i].tempo;
-            e.style.backgroundColor = Color.gray;
         };
         libraryListView.makeItem = makeItem;
         libraryListView.bindItem = bindItem;
         libraryListView.itemsSource = songsLibrary;
         libraryListView.selectionType = SelectionType.Single;
         libraryListView.selectedIndex = 0;
+        if (songSelected != null) 
+        {
+            track = await LoadAudioClip();
+            drumController.SetMidiPathFile(songSelected + "/drums.midi");
+        }
     }
 
     private void StopTrack() 
@@ -222,7 +279,6 @@ public class UIMenuController : MonoBehaviour
         string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "", false);
         if (paths.Length > 0)
         {
-            // Verify the selected directory and file format
             Match match = Regex.Match(paths[0], pattern: @".+\\(.*)\.(?:mp3|wav|flac|ogg)$");
             if (match.Success)
             {
@@ -234,11 +290,13 @@ public class UIMenuController : MonoBehaviour
             else
             {
                 processButton.SetEnabled(false);
+                alertDialog.CreateDialog("Import Error", "The file format is invalid.");
             }
         }
         else
         {
             processButton.SetEnabled(false);
+            alertDialog.CreateDialog("Import Error", "Not file selected.");
         }
     }
 
@@ -263,7 +321,7 @@ public class UIMenuController : MonoBehaviour
             }
         }
         songSelected = songDirectories[0];
-        string firstSong = songsLibrary[0];
+
         SetDifficultyAndTempo();
     }
 
@@ -272,7 +330,14 @@ public class UIMenuController : MonoBehaviour
         if (track != null)
         {
             AudioPlayer.clip = track;
-            AudioPlayer.Play();
+            if (AudioPlayer.isPlaying)
+            {
+                AudioPlayer.Pause();
+            }
+            else 
+            {
+                AudioPlayer.Play();
+            }
         }
         else 
         {

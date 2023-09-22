@@ -10,18 +10,18 @@ using UnityEngine;
 
 public class DrumController : MonoBehaviour
 {
-    public HitController kickHitController;
-    public HitController snareHitController;
-    public HitController tom1HitController;
-    public HitController hihatHitController = null;
-    public HitController crashHitController = null;
-    public HitController rideHitController;
+    [SerializeField] public HitController kickHitController;
+    [SerializeField] public HitController snareHitController;
+    [SerializeField] public HitController tom1HitController;
+    [SerializeField] public HitController hihatHitController = null;
+    [SerializeField] public HitController crashHitController = null;
+    [SerializeField] public HitController rideHitController;
 
     public float currentAlpha = 0f;
     public AudioSource audioPlayer;
 
     private string midifilePath;
-    private List<Tuple<Double, int, int>> noteList = new List<Tuple<Double, int, int>>();
+    private List<Tuple<Double, int, float>> noteList = new List<Tuple<Double, int, float>>();
     private float audioStartTime;
 
     public float tolerance = 0.01f;
@@ -47,24 +47,24 @@ public class DrumController : MonoBehaviour
                 {
                     switch(tuple.Item2){
                         case 36:
-                            kickHitController.SetAlpha(1f);
+                            kickHitController.SetAlpha(tuple.Item3);
                             break;
                         case 38:
-                            snareHitController.SetAlpha(1f);
+                            snareHitController.SetAlpha(tuple.Item3);
                             break;
                         case 48:
-                            tom1HitController.SetAlpha(1f);
+                            tom1HitController.SetAlpha(tuple.Item3);
                             break;
                         case 46:
-                            hihatHitController.SetAlpha(1f);
+                            hihatHitController.SetAlpha(tuple.Item3);
                             break;
 
                         case 49 or 52 or 55 or 57:
-                            crashHitController.SetAlpha(1f);
+                            crashHitController.SetAlpha(tuple.Item3);
                             break;
                         
                         case 51:
-                            rideHitController.SetAlpha(1f);
+                            rideHitController.SetAlpha(tuple.Item3);
                             break;
                     }
                 }
@@ -84,12 +84,11 @@ public class DrumController : MonoBehaviour
 
         foreach (Note note in notes) 
         {
-            long startTime = note.Time;
             var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, midi.GetTempoMap());
             double fixStartTime = (double)metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f;
             int noteName = note.NoteNumber;
-            int noteVelocity = note.Velocity;
-            Tuple<Double,int,int> tuple = new Tuple<Double, int, int> ( fixStartTime, noteName, noteVelocity );
+            float noteVelocity = note.Velocity/127.0f;
+            Tuple<Double,int,float> tuple = new Tuple<Double, int, float> ( fixStartTime, noteName, noteVelocity );
             noteList.Add( tuple );
         }
     }
@@ -108,13 +107,6 @@ public class DrumController : MonoBehaviour
         else 
         {
             midifilePath = null;
-        }
-    }
-    private void PrintListNotes() 
-    {
-        foreach (var tuple in noteList) 
-        {
-            Debug.Log(tuple);   
         }
     }
 }

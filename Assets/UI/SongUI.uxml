@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
-    <ui:VisualElement name="layer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; justify-content: space-around;">
-        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="name" class="normalText" style="width: 33%; align-self: center;" />
-        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="difficulty" class="normalText" style="width: 33%; align-self: center;" />
-        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="tempo" class="normalText" style="width: 33%; align-self: center;" />
+    <ui:VisualElement name="layerBackground" style="flex-grow: 0; background-color: rgb(29, 29, 29); flex-direction: row; justify-content: flex-start; flex-shrink: 0; align-self: auto; align-items: auto; flex-basis: auto;">
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="name" class="normalText" style="width: 33%; align-self: auto; font-size: 20px; -unity-text-align: upper-left; justify-content: flex-start; align-items: auto; flex-shrink: initial; flex-grow: initial; text-overflow: ellipsis;" />
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="difficulty" class="normalText" style="width: 33%; align-self: auto; font-size: 20px; -unity-text-align: upper-left; align-items: auto; flex-grow: initial; flex-shrink: initial;" />
+        <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="tempo" class="normalText" style="width: 33%; align-self: auto; font-size: 20px; -unity-text-align: upper-left; height: auto; align-items: auto; flex-grow: initial; flex-shrink: initial;" />
     </ui:VisualElement>
 </ui:UXML>
