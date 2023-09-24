@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
@@ -18,6 +19,9 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public DrumController drumController;
     [SerializeField] public List<SongData> songInfo = new List<SongData>();  // List to store song data
     [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
+    [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
+    public AudioMixerGroup audioMixerGroupDrumTrack;
+    public AudioMixerGroup audioMixerGroupNoDrumsTrack;
 
     // Paths and variables for managing audio files and libraries
     private string audioFilePath;
@@ -70,6 +74,7 @@ public class UIMenuController : MonoBehaviour
         playIconBackground = new StyleBackground(playIcon);
         pauseIconBackground = new StyleBackground(pauseIcon);
         RefreshLibrary();  // Initialize the song library
+        
     }
     private void Update()
     {
@@ -86,13 +91,15 @@ public class UIMenuController : MonoBehaviour
     private void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
+        AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
 
         // Get references to UI elements and set up event handlers
         uploadButton = root.Q<Button>("buttonUpload");
         processButton = root.Q<Button>("buttonProcess");
         mediaPlayButton = root.Q<Button>("buttonPlay");
         mediaStopButton = root.Q<Button>("buttonStop");
-        
+        settingsButton = root.Q<Button>("buttonSettings");
+
         playIconElement = root.Q<VisualElement>("iconPlay");
         playIconElement.style.backgroundImage = playIconBackground;
 
@@ -104,6 +111,14 @@ public class UIMenuController : MonoBehaviour
         trackSelected = trackDropdown.choices[0];
         trackDropdown.RegisterValueChangedCallback(async v => {
             trackSelected = v.newValue;
+            if (v.newValue == "drums")
+            {
+                AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
+            }
+            else 
+            {
+                AudioPlayer.outputAudioMixerGroup = audioMixerGroupNoDrumsTrack;
+            }
             AudioPlayer.Stop();
             track = await LoadAudioClip();
         });
@@ -114,6 +129,9 @@ public class UIMenuController : MonoBehaviour
         processButton.clicked += () => StartProcessing();
         mediaPlayButton.clicked += () => PlayTrack();
         mediaStopButton.clicked += () => StopTrack();
+        settingsButton.clicked += () => {
+            settingsSetup.CreateSettingsWindow();
+        };
 
         // Set up event handler for selecting a song in the library
         libraryListView.itemsChosen += async (evt) =>
@@ -206,7 +224,7 @@ public class UIMenuController : MonoBehaviour
     {
         SearchSongs();
         libraryListView.Clear();
-        var listItem = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/SongUI.uxml");
+        var listItem = Resources.Load<VisualTreeAsset>("SongUI");
         Func<VisualElement> makeItem = () => listItem.Instantiate();
         Action<VisualElement, int> bindItem = (e, i) => 
         {

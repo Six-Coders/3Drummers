@@ -1,0 +1,125 @@
+.windowContainer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.23);
+    flex-direction: column;
+}
+.window {
+    width: 45%;
+    height: 40%;
+    background-color: rgb(46, 46, 46);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    align-self: auto;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    justify-content: space-between;
+}
+
+.title-Container {
+    justify-content: center;
+    align-items: center;
+    align-text: center;
+    color: rgb(255,255,255);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.title-Text {
+    font-size: 30px;
+    -unity-font-style: bold;
+    justify-content: center;
+}
+
+.sliders-Container {
+    justify-content: center;
+    align-items: center;
+    margin: 14px;
+    flex-direction: column;
+}
+
+.slider-Volumen {
+    white-space: normal;
+    width: 60%;
+}
+
+.buttons-Container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+.unity-slider__label {
+    color: rgb(255,255,255);
+    -unity-font-style: bold;
+    font-size: 20px;
+}
+
+.normal-Text {
+    font-size: 20px;
+    color: rgb(255,255,255);
+}
+
+.button {
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(190, 67, 67);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 75%;
+    -unity-font-style: bold;
+    font-size: 16px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    min-width: auto;
+    min-height: auto;
+    flex-basis: auto;
+    flex-direction: column;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    width: 25%;
+}
+
+.button:hover {
+    width: 25%;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(128, 43, 43);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 75%;
+    -unity-font-style: bold;
+    font-size: 16px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    min-width: auto;
+    min-height: auto;
+    max-width: none;
+    max-height: none;
+    flex-basis: auto;
+    flex-direction: column;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}

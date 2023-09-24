@@ -1,11 +1,2 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1; background-color: rgb(51, 51, 51); border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; flex-shrink: 1; flex-direction: column; justify-content: flex-start; align-items: stretch; align-self: auto;">
-        <ui:Label tabindex="-1" text="Settings" display-tooltip-when-elided="true" name="Label" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; font-size: 24px; -unity-font-style: bold;" />
-        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; margin-top: 10px;">
-            <ui:Slider picking-mode="Ignore" label="Master" value="42" high-value="100" name="masterSlider" usage-hints="None" style="color: rgb(255, 255, 255); font-size: 16px; -unity-font-style: normal;" />
-            <ui:Slider picking-mode="Ignore" label="Drum Track" value="42" high-value="100" name="drumSlider" style="color: rgb(255, 255, 255); font-size: 16px;" />
-            <ui:Slider picking-mode="Ignore" label="Drumless" value="42" high-value="100" name="drumlessSlider" style="font-size: 16px; color: rgb(255, 255, 255);" />
-        </ui:VisualElement>
-        <ui:Button text="Accept" display-tooltip-when-elided="true" name="acceptButton" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; font-size: 16px; -unity-font-style: bold; color: rgb(255, 255, 255); background-color: rgb(207, 56, 56); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; margin-left: 8px; margin-right: 8px; margin-top: 8px; margin-bottom: 8px; width: 50%; height: auto; align-self: center;" />
-    </ui:VisualElement>
 </ui:UXML>
