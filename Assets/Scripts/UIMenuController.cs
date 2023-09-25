@@ -354,7 +354,7 @@ public class UIMenuController : MonoBehaviour
             }
             else 
             {
-                AudioPlayer.Play();
+                AudioPlayer.PlayDelayed(2);
             }
         }
         else 

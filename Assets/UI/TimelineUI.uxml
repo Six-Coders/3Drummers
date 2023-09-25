@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(51, 51, 51); border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; flex-shrink: 1; flex-direction: column; justify-content: flex-start; align-items: stretch; align-self: flex-end; height: 10%; width: 65%; min-width: auto; max-width: 100%; top: 70%; bottom: 0; overflow: visible; visibility: visible; left: 0; margin-left: 0; padding-left: 0; position: relative; max-height: 30%;">
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: relative; height: 100%; width: 10%; flex-direction: column; align-items: center; justify-content: space-between; align-self: flex-start; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
+            <ui:VisualElement name="box_cymbal" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: auto;">
+                <ui:VisualElement name="cymbal" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/cymbal.png?fileID=2800000&amp;guid=c6339c0b800cd814ca60344d41fce785&amp;type=3#cymbal&apos;); min-height: 0; min-width: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="box_ride" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="ride" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/ride.png?fileID=2800000&amp;guid=71722ad4fa37f624aa2b2ec9555beeba&amp;type=3#ride&apos;); min-height: 0; min-width: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="box_tom" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="tom" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/tom.png?fileID=2800000&amp;guid=60e5bdb1730e3c74397981e47af8fe3a&amp;type=3#tom&apos;); min-height: 0; min-width: 0; margin-top: 10px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="box_hi_hat" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="hi_hat" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/hi_hat.png?fileID=2800000&amp;guid=75cc6974508821848adb9bbbeab85199&amp;type=3#hi_hat&apos;); min-height: 0; min-width: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="box_snare" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="snare" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/snare.png?fileID=2800000&amp;guid=90065a87d2867f54ea96a06a40a9ed2a&amp;type=3#snare&apos;); min-height: 0; min-width: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="box_kick" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="kick" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); position: relative; overflow: visible; display: flex; visibility: visible; top: 0; left: 0; height: 50px; width: 50px; background-image: url(&apos;project://database/Assets/icons/kick.png?fileID=2800000&amp;guid=d912d738149fc3b4d9a1905b2d227c33&amp;type=3#kick&apos;); min-height: 0; min-width: 0; -unity-slice-top: 10;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

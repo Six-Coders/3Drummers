@@ -16,6 +16,7 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController hihatHitController = null;
     [SerializeField] public HitController crashHitController = null;
     [SerializeField] public HitController rideHitController;
+    [SerializeField] public Generador3 intentoPrimero;
 
     public float currentAlpha = 0f;
     public AudioSource audioPlayer;
@@ -25,6 +26,9 @@ public class DrumController : MonoBehaviour
     private float audioStartTime;
 
     public float tolerance = 0.01f;
+
+   
+
     private void Start()
     {
         //Set Colors for every drum element
@@ -34,9 +38,13 @@ public class DrumController : MonoBehaviour
         hihatHitController.SetColor(Color.green);
         //crashHitController.SetColor(Color.yellow);
         rideHitController.SetColor(Color.cyan);
+
+        
     }
     void FixedUpdate()
     {
+        
+
         if (midifilePath != null) 
         {
             float currentTime = Time.time - audioStartTime;
@@ -65,6 +73,48 @@ public class DrumController : MonoBehaviour
                         
                         case 51:
                             rideHitController.SetAlpha(tuple.Item3);
+                            break;
+                    }
+                }
+
+                if (Mathf.Abs(((float)tuple.Item1 - 0.15625f) - audioPlayer.time) < tolerance && audioPlayer.isPlaying)
+                {
+                    switch (tuple.Item2)
+                    {
+                        case 36:
+                            Color kick_color = Color.red;
+                            kick_color.a = tuple.Item3;
+                            intentoPrimero.Generador("kick", kick_color);
+
+                            break;
+                        case 38:
+
+                            Color snare_color = Color.blue;
+                            snare_color.a = tuple.Item3;
+                            intentoPrimero.Generador("snare", snare_color);
+                            break;
+                        
+                        case 48:
+                            Color tom1_color = Color.magenta;
+                            tom1_color.a = tuple.Item3;
+                            intentoPrimero.Generador("tom1", tom1_color);
+                            break;
+                        case 46:
+                            Color hihat_color = Color.green;
+                            hihat_color.a = tuple.Item3;
+                            intentoPrimero.Generador("hihat", hihat_color);
+                            break;
+
+                        case 49 or 52 or 55 or 57:
+                            Color crash_color = Color.yellow;
+                            crash_color.a = tuple.Item3;
+                            intentoPrimero.Generador("crash", crash_color);
+                            break;
+
+                        case 51:
+                            Color ride_color = Color.cyan;
+                            ride_color.a = tuple.Item3;
+                            intentoPrimero.Generador("ride", ride_color);
                             break;
                     }
                 }
