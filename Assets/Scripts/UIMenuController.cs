@@ -103,6 +103,8 @@ public class UIMenuController : MonoBehaviour
         playIconElement = root.Q<VisualElement>("iconPlay");
         playIconElement.style.backgroundImage = playIconBackground;
 
+        
+
         libraryListView = root.Q<ListView>("libraryListView");
         trackDropdown = root.Q<DropdownField>("trackSelection");
         trackDropdown.choices.Clear();

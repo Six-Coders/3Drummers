@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class DrumController : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController rideHitController;
     [SerializeField] public Generador3 intentoPrimero;
 
+
+
     public float currentAlpha = 0f;
     public AudioSource audioPlayer;
 
@@ -27,10 +30,17 @@ public class DrumController : MonoBehaviour
 
     public float tolerance = 0.01f;
 
-   
+    [SerializeField] private VisualElement root;
+    [SerializeField] private VisualElement box_kick;
+    private IResolvedStyle box_kickGlobalPosition;
+    private IResolvedStyle box_kickGlobalBounds;
+
+
 
     private void Start()
     {
+        
+
         //Set Colors for every drum element
         kickHitController.SetColor(Color.red);
         snareHitController.SetColor(Color.blue);
