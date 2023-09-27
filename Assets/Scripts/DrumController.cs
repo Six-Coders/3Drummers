@@ -37,7 +37,7 @@ public class DrumController : MonoBehaviour
     {
         foreach (Material material in overlineMaterials) 
         {
-            Debug.Log(material.name);
+            
             if (material.name.Equals("Outline Material Hihat"))
             {
                 material.SetFloat("_Outline_Thickness", 0.0015f);
@@ -94,7 +94,7 @@ public class DrumController : MonoBehaviour
             for (int i = 0; i < noteList.Count; i++)
             {
                 var tuple = noteList[i];
-                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time) < tolerance) 
+                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time - 2f) < tolerance && audioPlayer.isPlaying) 
                 {
                     switch(tuple.Item2){
                         case 36:
@@ -120,7 +120,7 @@ public class DrumController : MonoBehaviour
                     }
                 }
 
-                if (Mathf.Abs(((float)tuple.Item1 - 0.15625f) - audioPlayer.time) < tolerance && audioPlayer.isPlaying)
+                if (Mathf.Abs(((float)tuple.Item1) - audioPlayer.time - 4f) < tolerance && audioPlayer.isPlaying)
                 {
                     switch (tuple.Item2)
                     {
@@ -181,7 +181,7 @@ public class DrumController : MonoBehaviour
             double fixStartTime = (double)metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f;
             int noteName = note.NoteNumber;
             float noteVelocity = note.Velocity/127.0f;
-            Tuple<Double,int,float> tuple = new Tuple<Double, int, float> ( fixStartTime, noteName, noteVelocity );
+            Tuple<Double,int,float> tuple = new Tuple<Double, int, float> ( fixStartTime + 4f, noteName, noteVelocity );
             noteList.Add( tuple );
         }
     }
