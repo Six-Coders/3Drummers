@@ -6,18 +6,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DrumController : MonoBehaviour
 {
     [SerializeField] public HitController kickHitController;
     [SerializeField] public HitController snareHitController;
     [SerializeField] public HitController tom1HitController;
-    [SerializeField] public HitController hihatHitController = null;
-    [SerializeField] public HitController crashHitController = null;
+    [SerializeField] public HitController hihatHitController;
+    [SerializeField] public HitController crashHitController;
     [SerializeField] public HitController rideHitController;
     [SerializeField] public Generador3 intentoPrimero;
 
+    [SerializeField] public List<Material> overlineMaterials = new List<Material>();
+
+    private float outlineThick = 0.015f;
     public float currentAlpha = 0f;
     public AudioSource audioPlayer;
 
@@ -27,8 +32,43 @@ public class DrumController : MonoBehaviour
 
     public float tolerance = 0.01f;
 
-   
 
+    private void ActivateOutline() 
+    {
+        foreach (Material material in overlineMaterials) 
+        {
+            Debug.Log(material.name);
+            if (material.name.Equals("Outline Material Hihat"))
+            {
+                material.SetFloat("_Outline_Thickness", 0.0015f);
+            }
+            else if (material.name.Equals("Outline Material Crash"))
+            {
+                material.SetFloat("_Outline_Thickness", 0.075f);
+            }
+            else if (material.name.Equals("Outline Material Ride"))
+            {
+                material.SetFloat("_Outline_Thickness", 0.00075f);
+            }
+            else if (material.name.Equals("Outline Material Tom")) 
+            {
+                material.SetFloat("_Outline_Thickness", 0.00025f);
+            }
+            else
+            {
+                material.SetFloat("_Outline_Thickness", outlineThick);
+            }
+            
+        }
+    }
+
+    private void DeactivateOutline() 
+    {
+        foreach (Material material in overlineMaterials) 
+        {
+            material.SetFloat("_Outline_Thickness", 0f);
+        }
+    }
     private void Start()
     {
         //Set Colors for every drum element
@@ -36,14 +76,17 @@ public class DrumController : MonoBehaviour
         snareHitController.SetColor(Color.blue);
         tom1HitController.SetColor(Color.magenta);
         hihatHitController.SetColor(Color.green);
-        //crashHitController.SetColor(Color.yellow);
+        crashHitController.SetColor(Color.yellow);
         rideHitController.SetColor(Color.cyan);
 
         
     }
     void FixedUpdate()
     {
-        
+        if (audioPlayer.isPlaying) 
+        {
+            DeactivateOutline();
+        }
 
         if (midifilePath != null) 
         {
@@ -131,7 +174,7 @@ public class DrumController : MonoBehaviour
         }
         var midi = MidiFile.Read(midifilePath);
         var notes = midi.GetNotes();
-
+        ActivateOutline();
         foreach (Note note in notes) 
         {
             var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, midi.GetTempoMap());
