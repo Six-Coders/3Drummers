@@ -19,6 +19,7 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController crashHitController;
     [SerializeField] public HitController rideHitController;
     [SerializeField] public Generador3 intentoPrimero;
+    public UIMenuController menuController;
 
     [SerializeField] public List<Material> overlineMaterials = new List<Material>();
 
@@ -30,8 +31,9 @@ public class DrumController : MonoBehaviour
     private List<Tuple<Double, int, float>> noteList = new List<Tuple<Double, int, float>>();
     private float audioStartTime;
 
-    public float tolerance = 0.01f;
+    public float tolerance = 3f;
 
+    
 
     private void ActivateOutline() 
     {
@@ -87,76 +89,83 @@ public class DrumController : MonoBehaviour
         {
             DeactivateOutline();
         }
-
         if (midifilePath != null) 
         {
-            float currentTime = Time.time - audioStartTime;
             for (int i = 0; i < noteList.Count; i++)
             {
                 var tuple = noteList[i];
-                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time - 2f) < tolerance && audioPlayer.isPlaying) 
+                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time - 2f) < tolerance+0.0125 && audioPlayer.isPlaying) 
                 {
-                    switch(tuple.Item2){
+                    float alpha = 1;
+                    if (menuController.isIntensitySet)
+                    {
+                        alpha = tuple.Item3;
+                    }
+                    switch (tuple.Item2){
                         case 36:
-                            kickHitController.SetAlpha(tuple.Item3);
+                            kickHitController.SetAlpha(alpha);
                             break;
                         case 38:
-                            snareHitController.SetAlpha(tuple.Item3);
+                            snareHitController.SetAlpha(alpha);
                             break;
                         case 48:
-                            tom1HitController.SetAlpha(tuple.Item3);
+                            tom1HitController.SetAlpha(alpha);
                             break;
                         case 46:
-                            hihatHitController.SetAlpha(tuple.Item3);
+                            hihatHitController.SetAlpha(alpha);
                             break;
 
                         case 49 or 52 or 55 or 57:
-                            crashHitController.SetAlpha(tuple.Item3);
+                            crashHitController.SetAlpha(alpha);
                             break;
                         
                         case 51:
-                            rideHitController.SetAlpha(tuple.Item3);
+                            rideHitController.SetAlpha(alpha);
                             break;
                     }
                 }
 
                 if (Mathf.Abs(((float)tuple.Item1) - audioPlayer.time - 4f) < tolerance && audioPlayer.isPlaying)
                 {
+                    float alpha = 1;
+                    if (menuController.isIntensitySet)
+                    {
+                        alpha = tuple.Item3;
+                    }
                     switch (tuple.Item2)
                     {
                         case 36:
                             Color kick_color = Color.red;
-                            kick_color.a = tuple.Item3;
+                            kick_color.a = alpha;
                             intentoPrimero.Generador("kick", kick_color);
 
                             break;
                         case 38:
-
                             Color snare_color = Color.blue;
-                            snare_color.a = tuple.Item3;
+                            snare_color.a = alpha;
                             intentoPrimero.Generador("snare", snare_color);
                             break;
                         
                         case 48:
                             Color tom1_color = Color.magenta;
-                            tom1_color.a = tuple.Item3;
+                            tom1_color.a = alpha;
                             intentoPrimero.Generador("tom1", tom1_color);
                             break;
                         case 46:
                             Color hihat_color = Color.green;
-                            hihat_color.a = tuple.Item3;
+                            hihat_color.a = alpha;
                             intentoPrimero.Generador("hihat", hihat_color);
                             break;
 
                         case 49 or 52 or 55 or 57:
                             Color crash_color = Color.yellow;
-                            crash_color.a = tuple.Item3;
+                            crash_color.a = alpha;
                             intentoPrimero.Generador("crash", crash_color);
                             break;
 
                         case 51:
                             Color ride_color = Color.cyan;
-                            ride_color.a = tuple.Item3;
+                            ride_color.a = alpha;
                             intentoPrimero.Generador("ride", ride_color);
                             break;
                     }

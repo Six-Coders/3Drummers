@@ -10,7 +10,6 @@ public class Generador3 : MonoBehaviour
     public float posicionInicialX = 0f;
     public float distanciaVerticalEntreNotas;
 
-
     public GameObject kickNote;
     public GameObject snareNote;
     public GameObject hihatNote;

@@ -7,19 +7,26 @@ public class MovimientoNota : MonoBehaviour
 {
     public float velocidad = 5000;
     public Vector2 direccion = Vector2.left; // Mueve la nota hacia la izquierda
-    public GameObject kickNote;                                  // Puedes ajustar la dirección según tus necesidades.
+    public AudioSource audioPlayer;                           
+
+    private void OnEnable()
+    {
+        GameObject obj = GameObject.FindWithTag("AudioPlayer");
+        audioPlayer = obj.GetComponent<AudioSource>();
+    }
 
     void FixedUpdate()
     {
-
-
-        // Mueve la nota en la dirección especificada.
-        transform.Translate(direccion * velocidad * Time.deltaTime * 250f);
-
-        // Comprueba si la nota ha salido de la pantalla y la destruye.
-        if (transform.position.x < 810) // Ajusta el valor según tus necesidades.
+        if ( audioPlayer != null)
         {
-            Destroy(gameObject);
+            if (audioPlayer.isPlaying)
+            {
+                transform.Translate(direccion * velocidad * Time.deltaTime * 250f);
+                if (transform.position.x < 810) // Ajusta el valor según tus necesidades.
+                {
+                    Destroy(gameObject);
+                }
+            }
         }
     }
 }

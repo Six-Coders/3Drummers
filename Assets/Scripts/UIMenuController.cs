@@ -20,6 +20,12 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public List<SongData> songInfo = new List<SongData>();  // List to store song data
     [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
     [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
+
+    private StyleBackground intensityIconEnable;
+    private StyleBackground intensityIconDisable;
+    public Sprite iconEnable;
+    public Sprite iconDisable;
+
     public AudioMixerGroup audioMixerGroupDrumTrack;
     public AudioMixerGroup audioMixerGroupNoDrumsTrack;
 
@@ -28,6 +34,7 @@ public class UIMenuController : MonoBehaviour
     private string libPath;
     private string unityPath;
     private string dataPersistentPath;
+    private float moveTime = 3;
     private int songSelectedIndex = 0;
 
     private string songSelected; // Currently selected song
@@ -40,6 +47,7 @@ public class UIMenuController : MonoBehaviour
 
     private AudioClip track = null;  // Reference to the currently selected audio track
     private bool audioIsPlaying = false;
+    public bool isIntensitySet = true;
 
     // Unity UI elements
     [SerializeField] private VisualElement root;
@@ -49,12 +57,16 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private Button mediaPlayButton;
     [SerializeField] private Button mediaStopButton;
     [SerializeField] private Button settingsButton;
+    [SerializeField] private Button mediaIncreaseButton;
+    [SerializeField] private Button mediaDecreaseButton;
+    [SerializeField] private Button intensityButton;
     [SerializeField] private VisualElement playIconElement;
     [SerializeField] private ListView libraryListView;
     [SerializeField] private bool bussy = false;  // Indicates if a background process is busy
-
+    [SerializeField] private VisualElement intensityIcon;
     public Sprite playIcon;
     public Sprite pauseIcon;
+
     private StyleBackground playIconBackground;
     private StyleBackground pauseIconBackground;
 
@@ -73,8 +85,9 @@ public class UIMenuController : MonoBehaviour
         libPath = Application.persistentDataPath + LibraryName;
         playIconBackground = new StyleBackground(playIcon);
         pauseIconBackground = new StyleBackground(pauseIcon);
+        intensityIconEnable = new StyleBackground(iconEnable);
+        intensityIconDisable = new StyleBackground(iconDisable);
         RefreshLibrary();  // Initialize the song library
-        
     }
     private void Update()
     {
@@ -99,8 +112,12 @@ public class UIMenuController : MonoBehaviour
         mediaPlayButton = root.Q<Button>("buttonPlay");
         mediaStopButton = root.Q<Button>("buttonStop");
         settingsButton = root.Q<Button>("buttonSettings");
+        mediaIncreaseButton = root.Q<Button>("buttonIncrease");
+        mediaDecreaseButton = root.Q<Button>("buttonDecrease");
+        intensityButton = root.Q<Button>("buttonIntensity");
 
         playIconElement = root.Q<VisualElement>("iconPlay");
+        intensityIcon = root.Q<VisualElement>("iconIntensity");
         playIconElement.style.backgroundImage = playIconBackground;
 
         libraryListView = root.Q<ListView>("libraryListView");
@@ -115,12 +132,14 @@ public class UIMenuController : MonoBehaviour
             {
                 AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
             }
-            else 
+            else
             {
                 AudioPlayer.outputAudioMixerGroup = audioMixerGroupNoDrumsTrack;
             }
             AudioPlayer.Stop();
             track = await LoadAudioClip();
+            AudioPlayer.clip = track;
+            AddDelayToSong();
         });
 
         // Set up event handlers for UI buttons
@@ -129,10 +148,24 @@ public class UIMenuController : MonoBehaviour
         processButton.clicked += () => StartProcessing();
         mediaPlayButton.clicked += () => PlayTrack();
         mediaStopButton.clicked += () => StopTrack();
+        mediaIncreaseButton.clicked += () => IncreaseTrack();
+        mediaDecreaseButton.clicked += () => DecreaseTrack();
         settingsButton.clicked += () => {
             settingsSetup.CreateSettingsWindow();
         };
-
+        intensityButton.clicked += () =>
+        {
+            if (isIntensitySet)
+            {
+                isIntensitySet = false;
+                intensityIcon.style.backgroundImage = intensityIconDisable;
+            }
+            else 
+            {
+                isIntensitySet = true;
+                intensityIcon.style.backgroundImage = intensityIconEnable;
+            }
+        };
         // Set up event handler for selecting a song in the library
         libraryListView.itemsChosen += async (evt) =>
         {
@@ -148,6 +181,8 @@ public class UIMenuController : MonoBehaviour
             }
             
             track = await LoadAudioClip();  // Load the selected audio clip
+            AudioPlayer.clip = track;
+            AddDelayToSong();
             songSelectedIndex = libraryListView.selectedIndex;
 
             Action<VisualElement, int> bindItem = (e, i) =>
@@ -252,6 +287,8 @@ public class UIMenuController : MonoBehaviour
         if (songSelected != null) 
         {
             track = await LoadAudioClip();
+            AudioPlayer.clip = track;
+            AddDelayToSong();
             drumController.SetMidiPathFile(songSelected + "/drums.midi");
         }
     }
@@ -261,6 +298,11 @@ public class UIMenuController : MonoBehaviour
         if (AudioPlayer.isPlaying) 
         {
             AudioPlayer.Stop();
+            GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
+            foreach (GameObject obj in notas) 
+            {
+                Destroy(obj);
+            }
         }
     }
 
@@ -343,35 +385,48 @@ public class UIMenuController : MonoBehaviour
         SetDifficultyAndTempo();
     }
 
+    private void AddDelayToSong() 
+    {
+        float silenceDuration = 4f;
+        AudioClip silenceClip = CreateSilenceClip(silenceDuration);
+        float[] silenceData = new float[silenceClip.samples * silenceClip.channels];
+        silenceClip.GetData(silenceData, 0);
+        float[] originalData = new float[AudioPlayer.clip.samples * AudioPlayer.clip.channels];
+        AudioPlayer.clip.GetData(originalData, 0);
+        float[] combinedData = new float[silenceData.Length + originalData.Length];
+        Array.Copy(silenceData, combinedData, silenceData.Length);
+        Array.Copy(originalData, 0, combinedData, silenceData.Length, originalData.Length);
+        AudioClip combinedClip = AudioClip.Create("CombinedAudio", combinedData.Length, AudioPlayer.clip.channels, AudioPlayer.clip.frequency, false);
+        combinedClip.SetData(combinedData, 0);
+        AudioPlayer.clip = combinedClip;
+
+    }
+    private void IncreaseTrack()
+    {
+        if (track != null)
+        {
+            AudioPlayer.time += moveTime;
+        }
+    }
+    private void DecreaseTrack()
+    {
+        if (track != null)
+        {
+            if (AudioPlayer.time > moveTime)
+            {
+                AudioPlayer.time -= moveTime;
+            }
+            else 
+            {
+                AudioPlayer.time = 0;
+            }
+        }
+
+    }
     private void PlayTrack()
     {
         if (track != null)
         {
-            AudioPlayer.clip = track;
-            float silenceDuration = 4f;
-
-            // Crear un AudioClip de silencio
-            AudioClip silenceClip = CreateSilenceClip(silenceDuration);
-
-            // Obtener los datos de los clips
-            float[] silenceData = new float[silenceClip.samples * silenceClip.channels];
-            silenceClip.GetData(silenceData, 0);
-
-            float[] originalData = new float[AudioPlayer.clip.samples * AudioPlayer.clip.channels];
-            AudioPlayer.clip.GetData(originalData, 0);
-
-            // Combinar los datos
-            float[] combinedData = new float[silenceData.Length + originalData.Length];
-            Array.Copy(silenceData, combinedData, silenceData.Length);
-            Array.Copy(originalData, 0, combinedData, silenceData.Length, originalData.Length);
-
-            // Crear un nuevo AudioClip combinado
-            AudioClip combinedClip = AudioClip.Create("CombinedAudio", combinedData.Length, AudioPlayer.clip.channels, AudioPlayer.clip.frequency, false);
-            combinedClip.SetData(combinedData, 0);
-
-            // Asignar el nuevo AudioClip al AudioSource
-            AudioPlayer.clip = combinedClip;
-            
             if (AudioPlayer.isPlaying)
             {
                 AudioPlayer.Pause();

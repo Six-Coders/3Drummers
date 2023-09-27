@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45087343, g: 0.500777, b: 0.5745894, a: 1}
+  m_IndirectSpecularColor: {r: 0.45087385, g: 0.50077754, b: 0.5745908, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -175,7 +175,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: b65b7e9dc637b2c4a9c2706e7dd66021, type: 2}
-  SpeedChange: 5
 --- !u!1 &87860595
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,7 +205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 98ac3bd476f0d7c43a13c7e50cc16b97, type: 2}
-  SpeedChange: 5
 --- !u!4 &87860597
 Transform:
   m_ObjectHideFlags: 0
@@ -1275,7 +1273,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: ff94afeb0836e3148847729ee4891b3c, type: 2}
-  SpeedChange: 5
 --- !u!4 &797785760
 Transform:
   m_ObjectHideFlags: 0
@@ -1373,7 +1370,7 @@ GameObject:
   - component: {fileID: 916346138}
   m_Layer: 5
   m_Name: UIMenu
-  m_TagString: Untagged
+  m_TagString: MenuController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1426,6 +1423,8 @@ MonoBehaviour:
   songInfo: []
   alertDialog: {fileID: 1035878493}
   settingsSetup: {fileID: 1107762718}
+  iconEnable: {fileID: 21300000, guid: f502d3cd5e1205640a269e5a27923bcf, type: 3}
+  iconDisable: {fileID: 21300000, guid: 1366ff7dd1a360f4fbf1ec04bf4085e5, type: 3}
   audioMixerGroupDrumTrack: {fileID: -1151774046865138394, guid: 4733ef2e0a7cf50488aeb94832a7d246, type: 2}
   audioMixerGroupNoDrumsTrack: {fileID: 8592813411487424510, guid: 4733ef2e0a7cf50488aeb94832a7d246, type: 2}
   songsLibrary: []
@@ -1438,6 +1437,7 @@ MonoBehaviour:
   trackList:
   - drums
   - no_drums
+  isIntensitySet: 1
   bussy: 0
   playIcon: {fileID: 21300000, guid: abb72cf65159b884581d35dffa713044, type: 3}
   pauseIcon: {fileID: 21300000, guid: b49b38a9041489040a1aa2d7150e12e3, type: 3}
@@ -1641,7 +1641,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: a22b97c75a6fd814989da3cc55e36f8a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 0fdb9cac48d182e49afd54673237f5bc, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 2
 --- !u!4 &1035878492
 Transform:
   m_ObjectHideFlags: 0
@@ -1702,7 +1702,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: a22b97c75a6fd814989da3cc55e36f8a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: f9adea24c10f4bd42a301614fdd053ae, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 2
 --- !u!4 &1107762717
 Transform:
   m_ObjectHideFlags: 0
@@ -1813,6 +1813,7 @@ MonoBehaviour:
   crashHitController: {fileID: 1317916664}
   rideHitController: {fileID: 87860596}
   intentoPrimero: {fileID: 199610978}
+  menuController: {fileID: 916346138}
   overlineMaterials:
   - {fileID: 2100000, guid: 420f02d16e24ffd4e9f39b55a01cd32d, type: 2}
   - {fileID: 2100000, guid: 5bbe7826f93c2724e8d102647c5f079c, type: 2}
@@ -1822,7 +1823,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5568bc98d3b31e24285dc0e2bfe7dfb3, type: 2}
   currentAlpha: 0
   audioPlayer: {fileID: 1459476926}
-  tolerance: 0.01
+  tolerance: 0.01125
 --- !u!1 &1317916663
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,7 +1854,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 130abdfc2ed03dd4789b616b3794e2d2, type: 2}
-  SpeedChange: 5
 --- !u!4 &1317916665
 Transform:
   m_ObjectHideFlags: 0
@@ -2047,7 +2047,7 @@ GameObject:
   - component: {fileID: 1459476926}
   m_Layer: 0
   m_Name: AudioPlayer
-  m_TagString: Untagged
+  m_TagString: AudioPlayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2210,7 +2210,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 3908e794e063ec740af02baeff9f12ab, type: 2}
-  SpeedChange: 5
 --- !u!1 &1462020011
 GameObject:
   m_ObjectHideFlags: 0
@@ -2241,7 +2240,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: e10e3163eedc9134c989973d12ffa648, type: 2}
-  SpeedChange: 5
 --- !u!4 &1462020013
 Transform:
   m_ObjectHideFlags: 0
@@ -2824,6 +2822,8 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1806680582}
+  - {fileID: 1035878492}
+  - {fileID: 1107762717}
   - {fileID: 551440625}
   - {fileID: 1273198308}
   - {fileID: 1214201920}
@@ -2838,8 +2838,6 @@ SceneRoots:
   - {fileID: 1462020013}
   - {fileID: 797785760}
   - {fileID: 1317916665}
-  - {fileID: 1035878492}
-  - {fileID: 1107762717}
   - {fileID: 139297153}
   - {fileID: 564696417}
   - {fileID: 121542128}

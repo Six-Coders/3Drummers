@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   velocidad: 2
   direccion: {x: -1, y: 0}
-  kickNote: {fileID: 0}
+  audioPlayer: {fileID: 0}
 --- !u!1 &6806712792191981679
 GameObject:
   m_ObjectHideFlags: 0
@@ -203,8 +203,8 @@ GameObject:
   m_Component:
   - component: {fileID: 619803511639553033}
   m_Layer: 6
-  m_Name: Note_1 1
-  m_TagString: Untagged
+  m_Name: Note_1_1
+  m_TagString: Note
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
