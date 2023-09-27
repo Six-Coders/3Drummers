@@ -51,7 +51,7 @@ public class Generador3 : MonoBehaviour
 
         RectTransform rideRect = rideNote.GetComponentInChildren<Image>().rectTransform;
         Vector3 ridePosition = rideRect.position;
-        Debug.Log("AWEAWEAWDAS" + ridePosition.x);
+        
 
 
         switch (instrumento)

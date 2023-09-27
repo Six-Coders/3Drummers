@@ -61,7 +61,7 @@ public class DrumController : MonoBehaviour
             for (int i = 0; i < noteList.Count; i++)
             {
                 var tuple = noteList[i];
-                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time) < tolerance) 
+                if (Mathf.Abs(((float)tuple.Item1) - audioPlayer.time) < tolerance) 
                 {
                     switch(tuple.Item2){
                         case 36:
@@ -87,7 +87,7 @@ public class DrumController : MonoBehaviour
                     }
                 }
 
-                if (Mathf.Abs(((float)tuple.Item1 - 0.15625f) - audioPlayer.time) < tolerance && audioPlayer.isPlaying)
+                if (Mathf.Abs(((float)tuple.Item1) - audioPlayer.time) < tolerance && audioPlayer.isPlaying)
                 {
                     switch (tuple.Item2)
                     {

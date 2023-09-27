@@ -221,7 +221,17 @@ public class UIMenuController : MonoBehaviour
         pythonProcess.WaitForExit();
         pythonProcess.Close();
     }
+    private AudioClip CreateSilenceClip(float durationInSeconds)
+    {
+        int sampleRate = 44100; // Tasa de muestreo estándar de CD de 44.1 kHz
+        int totalSamples = (int)(durationInSeconds * sampleRate);
+        float[] samples = new float[totalSamples];
 
+        AudioClip silenceClip = AudioClip.Create("Silence", totalSamples, 1, sampleRate, false);
+        silenceClip.SetData(samples, 0);
+
+        return silenceClip;
+    }
     private async void RefreshLibrary() 
     {
         SearchSongs();
@@ -350,16 +360,44 @@ public class UIMenuController : MonoBehaviour
         if (track != null)
         {
             AudioPlayer.clip = track;
+
+            float silenceDuration = 4f;
+
+            // Crear un AudioClip de silencio
+            AudioClip silenceClip = CreateSilenceClip(silenceDuration);
+
+            // Obtener los datos de los clips
+            float[] silenceData = new float[silenceClip.samples * silenceClip.channels];
+            silenceClip.GetData(silenceData, 0);
+
+            float[] originalData = new float[AudioPlayer.clip.samples * AudioPlayer.clip.channels];
+            AudioPlayer.clip.GetData(originalData, 0);
+
+            // Combinar los datos
+            float[] combinedData = new float[silenceData.Length + originalData.Length];
+            Array.Copy(silenceData, combinedData, silenceData.Length);
+            Array.Copy(originalData, 0, combinedData, silenceData.Length, originalData.Length);
+
+            // Crear un nuevo AudioClip combinado
+            AudioClip combinedClip = AudioClip.Create("CombinedAudio", combinedData.Length, AudioPlayer.clip.channels, AudioPlayer.clip.frequency, false);
+            combinedClip.SetData(combinedData, 0);
+
+            // Asignar el nuevo AudioClip al AudioSource
+            AudioPlayer.clip = combinedClip;
+
+
             if (AudioPlayer.isPlaying)
             {
                 AudioPlayer.Pause();
             }
-            else 
+            else
             {
-                AudioPlayer.PlayDelayed(2);
+                
+                AudioPlayer.Play();
+
             }
         }
-        else 
+        else
         {
             return;
         }
