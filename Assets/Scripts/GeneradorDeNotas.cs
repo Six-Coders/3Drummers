@@ -22,10 +22,8 @@ public class Generador3 : MonoBehaviour
     // Llama a esta función para generar una nota.
     public void Generador(string instrumento,Color color)
     {
-        
         // Crea una nueva instancia de la nota.
         GameObject nuevaNota = Instantiate(notaPrefab, contenedorDeNotas.transform);
-
         // Intenta obtener el componente RectTransform del objeto Image dentro de la nuevaNota.
         RectTransform imageRectTransform = nuevaNota.GetComponentInChildren<Image>().rectTransform;
         Vector3 notePosition = imageRectTransform.position;

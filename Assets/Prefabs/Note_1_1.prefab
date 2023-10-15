@@ -138,7 +138,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 900, y: -518}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 32, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1890456204084103231
 CanvasRenderer:
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3dbf1f5525d41a0428eb48305e78b24c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -193,6 +193,8 @@ MonoBehaviour:
   velocidad: 2
   direccion: {x: -1, y: 0}
   audioPlayer: {fileID: 0}
+  ghostNote: {fileID: 21300000, guid: 894389c3f0bd46a438f7951492803cd6, type: 3}
+  image: {fileID: 0}
 --- !u!1 &6806712792191981679
 GameObject:
   m_ObjectHideFlags: 0

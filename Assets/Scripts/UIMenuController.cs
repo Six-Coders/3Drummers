@@ -139,6 +139,7 @@ public class UIMenuController : MonoBehaviour
             AudioPlayer.Stop();
             track = await LoadAudioClip();
             AudioPlayer.clip = track;
+            AudioPlayer.time = 0f;
             AddDelayToSong();
         });
 
@@ -223,6 +224,7 @@ public class UIMenuController : MonoBehaviour
                 bussy = false;
                 processButton.SetEnabled(true);
                 alertDialog.CreateDialog("The file is processed", "The song is ready and loaded in the library.");
+                RefreshLibrary();
             }
             else 
             {
@@ -291,6 +293,54 @@ public class UIMenuController : MonoBehaviour
             AddDelayToSong();
             drumController.SetMidiPathFile(songSelected + "/drums.midi");
         }
+        if (audioFilePath != null) 
+        { 
+            string fileName = Path.GetFileNameWithoutExtension(audioFilePath);
+            int index = -1;
+            for (int i = 0; i < songsLibrary.Count; i++) 
+            {
+                string songLibraryName = songsLibrary[i];
+                if (fileName.Equals(songLibraryName)) 
+                {
+                    index = i;
+                    Debug.Log("Pase por aqui");
+                    break;
+                }
+            }
+            if (index != -1) 
+            {
+                songSelectedIndex = index;
+                UpdateLibrary();
+            }
+        }
+    }
+
+    private void UpdateLibrary() 
+    {
+
+        Action<VisualElement, int> bindItem = (e, i) =>
+        {
+            var name = e.Q<Label>("name");
+            var difficulty = e.Q<Label>("difficulty");
+            var tempo = e.Q<Label>("tempo");
+            var background = e.Q<VisualElement>("layerBackground");
+            if (i == songSelectedIndex)
+            {
+                background.style.backgroundColor = selectedSongColor;
+            }
+            else
+            {
+                background.style.backgroundColor = unselectedSongColor;
+            }
+            name.text = songsLibrary[i];
+            difficulty.text = songInfo[i].difficulty;
+            tempo.text = songInfo[i].tempo;
+        };
+        libraryListView.bindItem += bindItem;
+        drumController.SetMidiPathFile(songSelected + "/drums.midi");
+        mediaPlayButton.SetEnabled(true);
+        libraryListView.SetEnabled(true);
+
     }
 
     private void StopTrack() 

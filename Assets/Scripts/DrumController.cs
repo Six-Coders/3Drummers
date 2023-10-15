@@ -19,6 +19,8 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController crashHitController;
     [SerializeField] public HitController rideHitController;
     [SerializeField] public Generador3 intentoPrimero;
+
+    private List<Vector3> drumElements = new List<Vector3> ();
     public UIMenuController menuController;
 
     [SerializeField] public List<Material> overlineMaterials = new List<Material>();
@@ -28,13 +30,13 @@ public class DrumController : MonoBehaviour
     public AudioSource audioPlayer;
 
     private string midifilePath;
-    private List<Tuple<Double, int, float>> noteList = new List<Tuple<Double, int, float>>();
+    private List<Tuple<float, int, float>> noteList = new List<Tuple<float, int, float>>();
     private float audioStartTime;
 
     public float tolerance = 3f;
 
-    
-
+    private Quaternion snareRotation;
+    private Quaternion rideRotation;
     private void ActivateOutline() 
     {
         foreach (Material material in overlineMaterials) 
@@ -81,10 +83,14 @@ public class DrumController : MonoBehaviour
         crashHitController.SetColor(Color.yellow);
         rideHitController.SetColor(Color.cyan);
 
-        
+        snareRotation = snareHitController.transform.rotation;
+        rideRotation = rideHitController.transform.rotation;
     }
     void FixedUpdate()
     {
+        kickHitController.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        snareHitController.transform.rotation = snareRotation;
+        rideHitController.transform.rotation = rideRotation;
         if (audioPlayer.isPlaying) 
         {
             DeactivateOutline();
@@ -94,7 +100,7 @@ public class DrumController : MonoBehaviour
             for (int i = 0; i < noteList.Count; i++)
             {
                 var tuple = noteList[i];
-                if (Mathf.Abs((float)tuple.Item1 - audioPlayer.time - 2f) < tolerance+0.0125 && audioPlayer.isPlaying) 
+                if (Mathf.Abs(tuple.Item1 - audioPlayer.time - 2f) < tolerance+0.0125 && audioPlayer.isPlaying) 
                 {
                     float alpha = 1;
                     if (menuController.isIntensitySet)
@@ -104,9 +110,11 @@ public class DrumController : MonoBehaviour
                     switch (tuple.Item2){
                         case 36:
                             kickHitController.SetAlpha(alpha);
+                            kickHitController.transform.localScale = new Vector3(1.55f, 1.55f, 1.55f);
                             break;
                         case 38:
                             snareHitController.SetAlpha(alpha);
+                            snareHitController.transform.Rotate(new Vector3(-2f, 0f, 0f));
                             break;
                         case 48:
                             tom1HitController.SetAlpha(alpha);
@@ -119,8 +127,9 @@ public class DrumController : MonoBehaviour
                             crashHitController.SetAlpha(alpha);
                             break;
                         
-                        case 51:
+                        case 51 or 53 or 59:
                             rideHitController.SetAlpha(alpha);
+                            rideHitController.transform.Rotate(new Vector3(0.25f, -10f, 1f));
                             break;
                     }
                 }
@@ -187,10 +196,10 @@ public class DrumController : MonoBehaviour
         foreach (Note note in notes) 
         {
             var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, midi.GetTempoMap());
-            double fixStartTime = (double)metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f;
+            float fixStartTime = (float)(metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f);
             int noteName = note.NoteNumber;
             float noteVelocity = note.Velocity/127.0f;
-            Tuple<Double,int,float> tuple = new Tuple<Double, int, float> ( fixStartTime + 4f, noteName, noteVelocity );
+            Tuple<float,int,float> tuple = new Tuple<float, int, float> ( fixStartTime + 4f, noteName, noteVelocity );
             noteList.Add( tuple );
         }
     }
