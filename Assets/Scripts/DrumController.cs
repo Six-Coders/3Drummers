@@ -133,52 +133,6 @@ public class DrumController : MonoBehaviour
                             break;
                     }
                 }
-
-                if (Mathf.Abs(((float)tuple.Item1) - audioPlayer.time - 4f) < tolerance && audioPlayer.isPlaying)
-                {
-                    float alpha = 1;
-                    if (menuController.isIntensitySet)
-                    {
-                        alpha = tuple.Item3;
-                    }
-                    switch (tuple.Item2)
-                    {
-                        case 36:
-                            Color kick_color = Color.red;
-                            kick_color.a = alpha;
-                            intentoPrimero.Generador("kick", kick_color);
-
-                            break;
-                        case 38:
-                            Color snare_color = Color.blue;
-                            snare_color.a = alpha;
-                            intentoPrimero.Generador("snare", snare_color);
-                            break;
-                        
-                        case 48:
-                            Color tom1_color = Color.magenta;
-                            tom1_color.a = alpha;
-                            intentoPrimero.Generador("tom1", tom1_color);
-                            break;
-                        case 46:
-                            Color hihat_color = Color.green;
-                            hihat_color.a = alpha;
-                            intentoPrimero.Generador("hihat", hihat_color);
-                            break;
-
-                        case 49 or 52 or 55 or 57:
-                            Color crash_color = Color.yellow;
-                            crash_color.a = alpha;
-                            intentoPrimero.Generador("crash", crash_color);
-                            break;
-
-                        case 51:
-                            Color ride_color = Color.cyan;
-                            ride_color.a = alpha;
-                            intentoPrimero.Generador("ride", ride_color);
-                            break;
-                    }
-                }
             }
         }
 

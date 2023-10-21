@@ -1,17 +1,20 @@
 using SFB;  // Using a file browser library
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
+using System.Windows.Forms;
 using Debug = UnityEngine.Debug;
+using Button = UnityEngine.UIElements.Button;
+using ListView = UnityEngine.UIElements.ListView;
+using Label = UnityEngine.UIElements.Label;
+using Application = UnityEngine.Application;
 
 public class UIMenuController : MonoBehaviour
 {
@@ -20,6 +23,7 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public List<SongData> songInfo = new List<SongData>();  // List to store song data
     [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
     [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
+    [SerializeField] public MultimediaLineController lineController;
 
     private StyleBackground intensityIconEnable;
     private StyleBackground intensityIconDisable;
@@ -59,11 +63,14 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button mediaIncreaseButton;
     [SerializeField] private Button mediaDecreaseButton;
+    [SerializeField] private Button exportMIDIButton;
     [SerializeField] private Button intensityButton;
     [SerializeField] private VisualElement playIconElement;
     [SerializeField] private ListView libraryListView;
     [SerializeField] private bool bussy = false;  // Indicates if a background process is busy
     [SerializeField] private VisualElement intensityIcon;
+    [SerializeField] private MinMaxSlider multimediaLine;
+
     public Sprite playIcon;
     public Sprite pauseIcon;
 
@@ -77,6 +84,11 @@ public class UIMenuController : MonoBehaviour
     // Labels
     private Label fileName;
 
+    //Multimedia System
+    private float loopStartTime;
+    private float loopEndTime;
+    private float audioLength;
+
     private void Start()
     {
         string LibraryName = "/Lib";
@@ -88,6 +100,7 @@ public class UIMenuController : MonoBehaviour
         intensityIconEnable = new StyleBackground(iconEnable);
         intensityIconDisable = new StyleBackground(iconDisable);
         RefreshLibrary();  // Initialize the song library
+        multimediaLine.lowLimit = 0;
     }
     private void Update()
     {
@@ -98,6 +111,11 @@ public class UIMenuController : MonoBehaviour
         else
         {
             playIconElement.style.backgroundImage = playIconBackground;
+        }
+
+        if (AudioPlayer.time > loopEndTime) 
+        {
+            AudioPlayer.time = loopStartTime;
         }
     }
 
@@ -115,11 +133,13 @@ public class UIMenuController : MonoBehaviour
         mediaIncreaseButton = root.Q<Button>("buttonIncrease");
         mediaDecreaseButton = root.Q<Button>("buttonDecrease");
         intensityButton = root.Q<Button>("buttonIntensity");
+        exportMIDIButton = root.Q<Button>("buttonExportMIDI");
 
         playIconElement = root.Q<VisualElement>("iconPlay");
         intensityIcon = root.Q<VisualElement>("iconIntensity");
         playIconElement.style.backgroundImage = playIconBackground;
 
+        multimediaLine = root.Q<MinMaxSlider>("multimediaLine");
         libraryListView = root.Q<ListView>("libraryListView");
         trackDropdown = root.Q<DropdownField>("trackSelection");
         trackDropdown.choices.Clear();
@@ -151,6 +171,7 @@ public class UIMenuController : MonoBehaviour
         mediaStopButton.clicked += () => StopTrack();
         mediaIncreaseButton.clicked += () => IncreaseTrack();
         mediaDecreaseButton.clicked += () => DecreaseTrack();
+        exportMIDIButton.clicked += () => SelectFolderButton();
         settingsButton.clicked += () => {
             settingsSetup.CreateSettingsWindow();
         };
@@ -209,8 +230,19 @@ public class UIMenuController : MonoBehaviour
             mediaPlayButton.SetEnabled(true);
             libraryListView.SetEnabled(true);
         };
+        multimediaLine.RegisterValueChangedCallback(v => 
+        {
+            var newValues = v.newValue;
+            var minValue = newValues[0];
+            var maxValue = newValues[1];
+            loopStartTime = minValue;
+            loopEndTime = maxValue;
+            AudioPlayer.Pause();
+            AudioPlayer.time = minValue;
+        });
     }
 
+    //Funcion para inicializar el proceso de separar y ADT de la canción
     private async void StartProcessing() 
     {
         if (audioFilePath != null) 
@@ -257,6 +289,7 @@ public class UIMenuController : MonoBehaviour
         pythonProcess.Close();
     }
 
+    //Funcion para refrescar la libreria (se cargan las canciones a la listView)
     private async void RefreshLibrary() 
     {
         SearchSongs();
@@ -315,6 +348,7 @@ public class UIMenuController : MonoBehaviour
         }
     }
 
+    //Función para ACTUALIZAR la libreria
     private void UpdateLibrary() 
     {
 
@@ -343,6 +377,7 @@ public class UIMenuController : MonoBehaviour
 
     }
 
+    //Funcion para DETENER la reproducción de la canción
     private void StopTrack() 
     {
         if (AudioPlayer.isPlaying) 
@@ -356,6 +391,7 @@ public class UIMenuController : MonoBehaviour
         }
     }
 
+    // XDDD
     private void SetDifficultyAndTempo() 
     {
         if (CheckFiles(songSelected))
@@ -369,7 +405,7 @@ public class UIMenuController : MonoBehaviour
             // Handle the case where required files are missing
         }
     }
-
+    //Funcion para verificar los archivos requeridos al momento de cargar la libreria
     private bool CheckFiles(string path)
     {
         bool isValid = true;
@@ -383,7 +419,7 @@ public class UIMenuController : MonoBehaviour
         }
         return isValid;
     }
-
+    //Funcion para abrir un archivo de audio
     private void UploadAudiofile() 
     {
         string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "", false);
@@ -409,7 +445,7 @@ public class UIMenuController : MonoBehaviour
             alertDialog.CreateDialog("Import Error", "Not file selected.");
         }
     }
-
+    //Función para buscar canciones en un directorio (el default)
     private void SearchSongs() 
     {
         songDirectories.Clear();
@@ -435,6 +471,7 @@ public class UIMenuController : MonoBehaviour
         SetDifficultyAndTempo();
     }
 
+    //Función para agregar un Delay de 4 segundos a la canción (se crea un clip nuevo).
     private void AddDelayToSong() 
     {
         float silenceDuration = 4f;
@@ -450,7 +487,17 @@ public class UIMenuController : MonoBehaviour
         combinedClip.SetData(combinedData, 0);
         AudioPlayer.clip = combinedClip;
 
+        //Linea MULTIMEDIA
+        audioLength = AudioPlayer.clip.length/2;
+        multimediaLine.highLimit = audioLength;
+        multimediaLine.minValue = 0;
+        multimediaLine.maxValue = audioLength;
+        loopStartTime = multimediaLine.minValue;
+        loopEndTime = multimediaLine.maxValue;
+        lineController.maximum = audioLength;
     }
+
+    //Adelanta la canción
     private void IncreaseTrack()
     {
         if (track != null)
@@ -458,6 +505,7 @@ public class UIMenuController : MonoBehaviour
             AudioPlayer.time += moveTime;
         }
     }
+    //Retrocede la canción
     private void DecreaseTrack()
     {
         if (track != null)
@@ -473,6 +521,7 @@ public class UIMenuController : MonoBehaviour
         }
 
     }
+    //Reproduce la canción
     private void PlayTrack()
     {
         if (track != null)
@@ -491,10 +540,10 @@ public class UIMenuController : MonoBehaviour
             return;
         }
     }
-
+    //Crea un clip con silencio para agregarlo a la canción (4 segs)
     private AudioClip CreateSilenceClip(float durationInSeconds)
     {
-        int sampleRate = 44100; // Tasa de muestreo estándar de CD de 44.1 kHz
+        int sampleRate = 44100;
         int totalSamples = (int)(durationInSeconds * sampleRate);
         float[] samples = new float[totalSamples];
 
@@ -505,7 +554,7 @@ public class UIMenuController : MonoBehaviour
     }
 
 
-    // Load an audio clip asynchronously
+    // Cargar el clip de audio de manera async
     async Task<AudioClip> LoadAudioClip()
     {
         string songDirectory = null;
@@ -555,7 +604,47 @@ public class UIMenuController : MonoBehaviour
             return null;
         }
     }
+
+    //Dialog Folder Path
+    public string GetFolderPath()
+    {
+        string folderPath = "";
+        using (var dialog = new FolderBrowserDialog())
+        {
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                folderPath = dialog.SelectedPath;
+            }
+        }
+        return folderPath;
+    }
+
+    //Export Button
+    public void SelectFolderButton()
+    {
+        string selectedFolder = GetFolderPath();
+
+        if (!string.IsNullOrEmpty(selectedFolder))
+        {
+            if (songSelected != null)
+            {
+                string midiFile = songSelected + "/drums.midi";
+                File.Copy(midiFile, selectedFolder + "/drums.midi", true);
+            }
+            else
+            {
+                alertDialog.CreateDialog("Error", "No Song Selected.");
+            }
+
+        }
+        else 
+        {
+            alertDialog.CreateDialog("Error", "No Folder Selected.");
+        }
+    }
 }
+
 
 [Serializable]
 public class SongData 

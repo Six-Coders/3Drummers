@@ -199,17 +199,7 @@
     border-bottom-width: 2px;
 }
 
-.unity-base-field__input {
-    background-color: rgba(240, 70, 70, 0.2);
-    border-left-color: rgb(190, 67, 67);
-    border-right-color: rgb(190, 67, 67);
-    border-top-color: rgb(190, 67, 67);
-    border-bottom-color: rgb(190, 67, 67);
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
+
 
 .unity-base-popup-field__arrow {
     -unity-background-image-tint-color: rgb(255, 255, 255);
@@ -219,4 +209,20 @@
     color: rgb(255, 255, 255);
     font-size: 16px;
     -unity-font-style: bold;
+}
+
+.unity-min-max-slider__tracker {
+    background-color: rgba(0,0,0,0);
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+}
+
+.unity-min-max-slider__dragger {
+    background-color: rgba(0,0,0,0);
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
 }
