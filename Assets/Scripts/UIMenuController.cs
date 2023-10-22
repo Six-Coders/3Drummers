@@ -9,12 +9,8 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
-using System.Windows.Forms;
+using Melanchall.DryWetMidi.Core;
 using Debug = UnityEngine.Debug;
-using Button = UnityEngine.UIElements.Button;
-using ListView = UnityEngine.UIElements.ListView;
-using Label = UnityEngine.UIElements.Label;
-using Application = UnityEngine.Application;
 
 public class UIMenuController : MonoBehaviour
 {
@@ -609,13 +605,14 @@ public class UIMenuController : MonoBehaviour
     public string GetFolderPath()
     {
         string folderPath = "";
-        using (var dialog = new FolderBrowserDialog())
+        var paths = StandaloneFileBrowser.OpenFolderPanel("Choose Directory","",false);
+        if (paths.Length >= 1)
         {
-            DialogResult result = dialog.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                folderPath = dialog.SelectedPath;
-            }
+            folderPath = paths[0].Replace('\\', '/');
+        }
+        else 
+        {
+            alertDialog.CreateDialog("Error", "No Folder Selected");
         }
         return folderPath;
     }
@@ -624,13 +621,14 @@ public class UIMenuController : MonoBehaviour
     public void SelectFolderButton()
     {
         string selectedFolder = GetFolderPath();
+        var midiFile = MidiFile.Read(songSelected + "/drums.midi");
+        var songNameWithoutExtension = Path.GetFileNameWithoutExtension(songSelected);
 
-        if (!string.IsNullOrEmpty(selectedFolder))
+        if (selectedFolder != null)
         {
-            if (songSelected != null)
+            if (midiFile != null)
             {
-                string midiFile = songSelected + "/drums.midi";
-                File.Copy(midiFile, selectedFolder + "/drums.midi", true);
+                midiFile.Write(selectedFolder+"/"+songNameWithoutExtension+".midi",overwriteFile: true);
             }
             else
             {
