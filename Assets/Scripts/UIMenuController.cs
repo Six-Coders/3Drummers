@@ -20,6 +20,7 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
     [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
     [SerializeField] public MultimediaLineController lineController;
+    [SerializeField] public DrumMIDIController drumMIDIController;
 
     private StyleBackground intensityIconEnable;
     private StyleBackground intensityIconDisable;
@@ -54,6 +55,7 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private DropdownField trackDropdown;
     [SerializeField] private Button uploadButton;
     [SerializeField] private Button processButton;
+    [SerializeField] private Button testButton;
     [SerializeField] private Button mediaPlayButton;
     [SerializeField] private Button mediaStopButton;
     [SerializeField] private Button settingsButton;
@@ -85,6 +87,7 @@ public class UIMenuController : MonoBehaviour
     private float loopEndTime;
     private float audioLength;
 
+    bool isRecording = false;
     private void Start()
     {
         string LibraryName = "/Lib";
@@ -112,6 +115,10 @@ public class UIMenuController : MonoBehaviour
         if (AudioPlayer.time > loopEndTime) 
         {
             AudioPlayer.time = loopStartTime;
+            if (isRecording)
+            {
+                StopRecording();
+            }
         }
     }
 
@@ -130,6 +137,7 @@ public class UIMenuController : MonoBehaviour
         mediaDecreaseButton = root.Q<Button>("buttonDecrease");
         intensityButton = root.Q<Button>("buttonIntensity");
         exportMIDIButton = root.Q<Button>("buttonExportMIDI");
+        testButton = root.Q<Button>("buttonTest");
 
         playIconElement = root.Q<VisualElement>("iconPlay");
         intensityIcon = root.Q<VisualElement>("iconIntensity");
@@ -168,6 +176,7 @@ public class UIMenuController : MonoBehaviour
         mediaIncreaseButton.clicked += () => IncreaseTrack();
         mediaDecreaseButton.clicked += () => DecreaseTrack();
         exportMIDIButton.clicked += () => SelectFolderButton();
+        testButton.clicked += () => StartRecordMidi();
         settingsButton.clicked += () => {
             settingsSetup.CreateSettingsWindow();
         };
@@ -237,7 +246,35 @@ public class UIMenuController : MonoBehaviour
             AudioPlayer.time = minValue;
         });
     }
-
+    private void StartRecordMidi() 
+    {
+        if (!isRecording)
+        {
+            mediaPlayButton.SetEnabled(false);
+            mediaDecreaseButton.SetEnabled(false);
+            mediaIncreaseButton.SetEnabled(false);
+            mediaStopButton.SetEnabled(false);
+            isRecording = true;
+            AudioPlayer.Stop();
+            AudioPlayer.Play();
+            drumMIDIController.Recording(loopStartTime,loopEndTime);
+            Debug.Log(AudioPlayer.time);
+        }
+        else 
+        {
+            StopRecording();
+        }
+    }
+    private void StopRecording() 
+    {
+        mediaPlayButton.SetEnabled(true);
+        mediaDecreaseButton.SetEnabled(true);
+        mediaIncreaseButton.SetEnabled(true);
+        mediaStopButton.SetEnabled(true);
+        AudioPlayer.Stop();
+        isRecording = false;
+        drumMIDIController.StopRecording();
+    }
     //Funcion para inicializar el proceso de separar y ADT de la canción
     private async void StartProcessing() 
     {

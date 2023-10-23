@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -173,5 +174,9 @@ public class DrumController : MonoBehaviour
         {
             midifilePath = null;
         }
+    }
+    public List<Tuple<float, int, float>> GetMidiList() 
+    {
+        return noteList;
     }
 }

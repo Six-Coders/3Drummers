@@ -1860,6 +1860,7 @@ MonoBehaviour:
   alertDialog: {fileID: 1035878493}
   settingsSetup: {fileID: 1107762718}
   lineController: {fileID: 1767773861}
+  drumMIDIController: {fileID: 983159401}
   iconEnable: {fileID: 21300000, guid: f502d3cd5e1205640a269e5a27923bcf, type: 3}
   iconDisable: {fileID: 21300000, guid: 1366ff7dd1a360f4fbf1ec04bf4085e5, type: 3}
   audioMixerGroupDrumTrack: {fileID: -1151774046865138394, guid: 4733ef2e0a7cf50488aeb94832a7d246, type: 2}
@@ -1907,6 +1908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3efcefaec81d8cc419bafcc30e40cf05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drumController: {fileID: 1273198309}
 --- !u!4 &983159402
 Transform:
   m_ObjectHideFlags: 0
