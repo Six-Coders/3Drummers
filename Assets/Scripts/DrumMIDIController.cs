@@ -2,6 +2,7 @@ using UnityEngine;
 using MidiJack;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class DrumMIDIController : MonoBehaviour
 {
@@ -50,16 +51,11 @@ public class DrumMIDIController : MonoBehaviour
     {
         List <Tuple<float,int,float>> originalMidi = drumController.GetMidiList();
 
-        //Filter originalList
-        List < Tuple<float, int, float> > filterList = new List<Tuple<float, int, float>> ();
-        foreach (var tuple in originalMidi) 
-        {
-            if (tuple.Item1 >= startingLoopTime && tuple.Item1 <= endingLoopTime) 
-            { 
-                filterList.Add(tuple);
-                Debug.Log("Agregue una tupla...");
-            }
-        }
+        //Filter Original MIDI
+        List < Tuple<float, int, float> > filterList = originalMidi
+            .Where(tuple => tuple.Item1 >= startingLoopTime && tuple.Item1 <= endingLoopTime)
+            .ToList();
+
         Debug.Log("filterList: " + filterList.Count.ToString());
         Debug.Log("recordingList: " + recordingList.Count.ToString());
 
@@ -69,61 +65,29 @@ public class DrumMIDIController : MonoBehaviour
             {
                 if (Math.Abs(tupleRecording.Item1 - tupleOriginal.Item1) < tol) 
                 {
-                    Debug.Log(Math.Abs(tupleRecording.Item1 - tupleOriginal.Item1));
-                    switch (tupleOriginal.Item2) 
+                    //MIDI Mapping Dictionary
+                    Dictionary<int, List<int>> noteMappings = new Dictionary<int, List<int>>()
                     {
-                        case 36: 
-                            {
-                                if (tupleRecording.Item2 == 35 || tupleRecording.Item2 == 36) 
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
-                        case 38:
-                            {
-                                if (tupleRecording.Item2 == 38 || tupleRecording.Item2 == 40)
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
-                        case 48:
-                            {
-                                if (tupleRecording.Item2 == 43 || tupleRecording.Item2 == 45 || tupleRecording.Item2 == 47 || tupleRecording.Item2 == 48 || tupleRecording.Item2 == 50) 
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
-                        case 46: 
-                            {
-                                if (tupleRecording.Item2 == 42 || tupleRecording.Item2 == 46) 
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
-                        case 49 or 52 or 55 or 57: 
-                            {
-                                if (tupleRecording.Item2 == 49 || tupleRecording.Item2 == 52 || tupleRecording.Item2 == 55 || tupleRecording.Item2 == 57) 
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
-                        case 51 or 53 or 59: 
-                            {
-                                if (tupleRecording.Item2 == 51 || tupleRecording.Item2 == 53 || tupleRecording.Item2 == 59) 
-                                {
-                                    score += 1;
-                                }
-                                break;
-                            }
+
+                        { 36, new List<int> { 35, 36 } },               // Kick
+                        { 38, new List<int> { 38, 40 } },               // Snare
+                        { 48, new List<int> { 43, 45, 47, 48, 50 } },   // Toms
+                        { 46, new List<int> { 26, 42, 46 } },           // Hi-hat
+                        { 49, new List<int> { 49, 52, 55, 57 } },       // Crash
+                        { 51, new List<int> { 51, 53, 59 } },           // Ride
+                    };
+
+                    Debug.Log(Math.Abs(tupleRecording.Item1 - tupleOriginal.Item1));
+
+                    // Check if original note and recording note match
+                    if (noteMappings.ContainsKey(tupleOriginal.Item2) && noteMappings[tupleOriginal.Item2].Contains(tupleRecording.Item2)) 
+                    {
+                        score += 1;
                     }
                 } 
             }
         }
+        // Adjust score base on the difference in note count
         score -= Math.Abs(filterList.Count - recordingList.Count);
     }
 }
