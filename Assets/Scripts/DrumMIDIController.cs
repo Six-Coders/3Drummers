@@ -2,12 +2,13 @@ using UnityEngine;
 using MidiJack;
 using System.Collections.Generic;
 using System;
-using AlertDialog;
+using Melanchall.DryWetMidi.Multimedia;
 
 public class DrumMIDIController : MonoBehaviour
 {
     public DrumController drumController;
     [SerializeField] public AlertDialog.Popup_Setup alertDialog;
+    InputDevice inputDevice = null;
 
     List<Tuple<float, int, float>> recordingList = new List<Tuple<float, int, float>>();
     bool isRecording = false;
@@ -18,13 +19,28 @@ public class DrumMIDIController : MonoBehaviour
     float tol = 0.125f;
     float errorMargin = 0;
     float endingLoopTime;
+    bool isConected;
+
     void Start()
     {
         MidiMaster.noteOnDelegate += NoteOn;
     }
     void Update()
     {
-
+        if (InputDevice.GetAll().Count > 0 && !isConected)
+        {
+            isConected = true;
+            inputDevice = InputDevice.GetByIndex(0);
+            alertDialog.CreateDialog("Notification","MIDI device "+inputDevice.Name+" is conected.");
+        }
+ 
+        if (isConected && InputDevice.GetAll().Count < 1) 
+        {
+            isConected = false;
+            alertDialog.CreateDialog("Notification", "MIDI device " + inputDevice.Name + " is disconected.");
+            inputDevice = null;
+        }
+        
     }
     void NoteOn(MidiChannel channel, int note, float velocity)
     {
@@ -57,11 +73,9 @@ public class DrumMIDIController : MonoBehaviour
         List < Tuple<float, int, float> > filterList = new List<Tuple<float, int, float>> ();
         foreach (var tuple in originalMidi) 
         {
-            Debug.Log("Tiempo: "+tuple.Item1);
             if (tuple.Item1 >= startingLoopTime && tuple.Item1 <= endingLoopTime + 2f) 
             { 
                 filterList.Add(tuple);
-                Debug.Log("Agregue una tupla...");
             }
         }
         foreach (var tupleOriginal in filterList) 
@@ -70,7 +84,6 @@ public class DrumMIDIController : MonoBehaviour
             {
                 if (Math.Abs(tupleRecording.Item1 - tupleOriginal.Item1) < tol) 
                 {
-                    Debug.Log(Math.Abs(tupleRecording.Item1 - tupleOriginal.Item1));
                     switch (tupleOriginal.Item2) 
                     {
                         case 36: 
@@ -159,5 +172,9 @@ public class DrumMIDIController : MonoBehaviour
             result = "Excellent!";
         }
         alertDialog.CreateDialog("Result", "Your Score is: " + result+" with %"+percentScore.ToString()+" correct notes.");
+    }
+    public bool IsConnected() 
+    {
+        return isConected;
     }
 }

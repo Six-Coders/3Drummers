@@ -11,6 +11,7 @@ using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using Melanchall.DryWetMidi.Core;
 using Debug = UnityEngine.Debug;
+using Unity.VisualScripting;
 
 public class UIMenuController : MonoBehaviour
 {
@@ -23,6 +24,10 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public DrumMIDIController drumMIDIController;
     [SerializeField] public UIPerso.PersoSetup persoSetup;
     [SerializeField] public GameObject UIProcessIndicator;
+    [SerializeField] public GameObject notesContainer;
+
+    [SerializeField] private Button exercisesButton;
+    [SerializeField] private Button songsButton;
 
     private StyleBackground intensityIconEnable;
     private StyleBackground intensityIconDisable;
@@ -37,6 +42,7 @@ public class UIMenuController : MonoBehaviour
     private string libPath;
     private string unityPath;
     private string dataPersistentPath;
+    private string exercisesPath;
     private float moveTime = 3;
     private int songSelectedIndex = 0;
 
@@ -97,6 +103,8 @@ public class UIMenuController : MonoBehaviour
     private void Start()
     {
         string LibraryName = "/Lib";
+        string exercisesName = "/Exercises";
+        exercisesPath = Application.persistentDataPath + exercisesName;
         unityPath = Application.streamingAssetsPath;
         dataPersistentPath = Application.persistentDataPath;
         libPath = Application.persistentDataPath + LibraryName;
@@ -104,7 +112,7 @@ public class UIMenuController : MonoBehaviour
         pauseIconBackground = new StyleBackground(pauseIcon);
         intensityIconEnable = new StyleBackground(iconEnable);
         intensityIconDisable = new StyleBackground(iconDisable);
-        RefreshLibrary();  // Initialize the song library
+        RefreshLibrary(libPath);  // Initialize the song library
         multimediaLine.lowLimit = 0;
         DrumZurda.SetActive(false);
         UIProcessIndicator.SetActive(false);
@@ -128,6 +136,7 @@ public class UIMenuController : MonoBehaviour
                 StopRecording();
             }
         }
+        testButton.SetEnabled(drumMIDIController.IsConnected());
     }
 
     private void OnEnable()
@@ -147,6 +156,8 @@ public class UIMenuController : MonoBehaviour
         intensityButton = root.Q<Button>("buttonIntensity");
         exportMIDIButton = root.Q<Button>("buttonExportMIDI");
         testButton = root.Q<Button>("buttonTest");
+        exercisesButton = root.Q<Button>("exercisesButton");
+        songsButton = root.Q<Button>("songsButton");
 
         fileName = root.Q<Label>("textFilename");
         playIconElement = root.Q<VisualElement>("iconPlay");
@@ -178,6 +189,7 @@ public class UIMenuController : MonoBehaviour
         });
 
         // Set up event handlers for UI buttons
+
         uploadButton.clicked += () => UploadAudiofile();
         processButton.SetEnabled(false);
         processButton.clicked += () => StartProcessing();
@@ -206,6 +218,23 @@ public class UIMenuController : MonoBehaviour
         persoButton.clicked += () => {
             persoSetup.CreatePersoWindow();
         };
+        exercisesButton.clicked += () => {
+
+            RefreshLibrary(exercisesPath);
+            processButton.SetEnabled(false);
+            uploadButton.SetEnabled(false);
+            trackDropdown.SetEnabled(false);
+
+        };
+
+        songsButton.clicked += () => {
+
+            RefreshLibrary(libPath);
+            processButton.SetEnabled(true);
+            uploadButton.SetEnabled(true);
+            trackDropdown.SetEnabled(true);
+        };
+
         // Set up event handler for selecting a song in the library
         libraryListView.itemsChosen += async (evt) =>
         {
@@ -303,7 +332,7 @@ public class UIMenuController : MonoBehaviour
                 processButton.SetEnabled(true);
                 alertDialog.CreateDialog("The file is processed", "The song is ready and loaded in the library.");
                 UIProcessIndicator.SetActive(false);
-                RefreshLibrary();
+                RefreshLibrary(libPath);
             }
             else 
             {
@@ -337,9 +366,9 @@ public class UIMenuController : MonoBehaviour
     }
 
     //Funcion para refrescar la libreria (se cargan las canciones a la listView)
-    private async void RefreshLibrary() 
+    private async void RefreshLibrary(string path) 
     {
-        SearchSongs();
+        SearchSongs(path);
         libraryListView.Clear();
         var listItem = Resources.Load<VisualTreeAsset>("SongUI");
         Func<VisualElement> makeItem = () => listItem.Instantiate();
@@ -430,6 +459,7 @@ public class UIMenuController : MonoBehaviour
         if (AudioPlayer.isPlaying) 
         {
             AudioPlayer.Stop();
+            AudioPlayer.time = 0f;
             GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
             foreach (GameObject obj in notas) 
             {
@@ -496,13 +526,13 @@ public class UIMenuController : MonoBehaviour
         }
     }
     //Función para buscar canciones en un directorio (el default)
-    private void SearchSongs() 
+    private void SearchSongs(string path) 
     {
         songDirectories.Clear();
         songsLibrary.Clear();
         songInfo.Clear();
 
-        string[] subdirectories = Directory.GetDirectories(libPath);
+        string[] subdirectories = Directory.GetDirectories(path);
         foreach (string subdirectory in subdirectories) 
         {
             string subDirName = Path.GetFileName(subdirectory);
@@ -550,9 +580,14 @@ public class UIMenuController : MonoBehaviour
     //Adelanta la canción
     private void IncreaseTrack()
     {
-        if (track != null)
+        if (track != null && AudioPlayer.time < loopEndTime)
         {
             AudioPlayer.time += moveTime;
+            RectTransform[] rectTransforms = notesContainer.GetComponentsInChildren<RectTransform>();
+            foreach (var trans in rectTransforms) 
+            {
+                trans.Translate(Vector3.left * moveTime * 2f*250f);
+            }
         }
     }
     //Retrocede la canción
@@ -563,6 +598,11 @@ public class UIMenuController : MonoBehaviour
             if (AudioPlayer.time > moveTime)
             {
                 AudioPlayer.time -= moveTime;
+                RectTransform[] rectTransforms = notesContainer.GetComponentsInChildren<RectTransform>();
+                foreach (var trans in rectTransforms)
+                {
+                    trans.Translate(Vector3.right * moveTime * 2f * 250f);
+                }
             }
             else 
             {

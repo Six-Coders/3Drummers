@@ -14,7 +14,11 @@
             <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); height: 10%;">
                 <ui:Button text="Export MIDI" display-tooltip-when-elided="true" name="buttonExportMIDI" class="button" />
             </ui:VisualElement>
-            <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 32px; -unity-font-style: bold; bottom: auto; position: relative; top: auto; left: auto; -unity-text-align: upper-center;" />
+            <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row;">
+                <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 32px; -unity-font-style: bold; bottom: auto; position: relative; top: auto; left: auto; -unity-text-align: upper-center;" />
+                <ui:Button text="Show Exercises" display-tooltip-when-elided="true" name="exercisesButton" class="button" style="width: 25%;" />
+                <ui:Button text="Show Songs" display-tooltip-when-elided="true" name="songsButton" class="button" style="width: 25%;" />
+            </ui:VisualElement>
             <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-shrink: initial; flex-direction: row; align-items: stretch; align-self: stretch; justify-content: space-between; margin-left: 1px; margin-right: 1px; margin-top: 20px; margin-bottom: 1px;">
                 <ui:Label tabindex="-1" text="Song" display-tooltip-when-elided="true" name="Label" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
                 <ui:Label tabindex="-1" text="Difficulty" display-tooltip-when-elided="true" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
@@ -36,7 +40,9 @@
                 <ui:Button display-tooltip-when-elided="true" name="buttonIncrease" class="mediaButton" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
                     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/increaseIcon.png?fileID=2800000&amp;guid=bcbf590227ec7ae4f99dbc0d65c5cbbc&amp;type=3#increaseIcon&apos;); margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
                 </ui:Button>
-                <ui:Button text="GRABAR" display-tooltip-when-elided="true" name="buttonTest" class="mediaButton" />
+                <ui:Button display-tooltip-when-elided="true" name="buttonTest" class="mediaButton">
+                    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/recordingIcon.png?fileID=2800000&amp;guid=0c02509ad9c9a08499b024b394294649&amp;type=3#recordingIcon&apos;); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 7px; margin-right: 7px; margin-top: 7px; margin-bottom: 7px;" />
+                </ui:Button>
             </ui:VisualElement>
             <ui:MinMaxSlider picking-mode="Ignore" min-value="10" max-value="12" low-limit="-10" high-limit="40" name="multimediaLine" style="flex-grow: 1; flex-shrink: 0; padding-left: 64px; padding-right: 64px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);" />
         </ui:VisualElement>

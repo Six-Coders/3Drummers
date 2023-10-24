@@ -10,7 +10,6 @@ public class MovimientoNota : MonoBehaviour
     public AudioSource audioPlayer;
     public Sprite ghostNote;
     public Image image;
-
     public void ChangeSprite() 
     { 
         image.sprite = ghostNote;
@@ -33,9 +32,13 @@ public class MovimientoNota : MonoBehaviour
             if (audioPlayer.isPlaying)
             {
                 transform.Translate(direccion * velocidad * Time.deltaTime * 250f);
-                if (transform.position.x < 810) // Ajusta el valor según tus necesidades.
+                if (transform.position.x < 810 || transform.position.x > Screen.width) // Ajusta el valor según tus necesidades.
                 {
-                    Destroy(gameObject);
+                    image.enabled = false;
+                }
+                else 
+                {
+                    image.enabled = true;
                 }
             }
         }

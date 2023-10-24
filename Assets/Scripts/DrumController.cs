@@ -4,10 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +22,13 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController hihatHitController2;
     [SerializeField] public HitController crashHitController2;
     [SerializeField] public HitController rideHitController2;
+
+    private Color kickColor = new Color(255/255f, 71 / 255f, 71 / 255f);
+    private Color snareColor = new Color(88 / 255f, 88 / 255f, 255 / 255f);
+    private Color hihatColor = new Color(115 / 255f, 255 / 255f, 115 / 255f);
+    private Color tomColor = new Color(255 / 255f, 107 / 255f, 245 / 255f);
+    private Color rideColor = new Color(134 / 255f, 255 / 255f, 255 / 255f);
+    private Color crashColor = new Color(253 / 255f, 253 / 255f, 123 / 255f);
 
     [SerializeField] public Generador3 intentoPrimero;
 
@@ -85,19 +88,19 @@ public class DrumController : MonoBehaviour
     private void Start()
     {
         //Set Colors for every drum element
-        kickHitController.SetColor(Color.red);
-        snareHitController.SetColor(Color.blue);
-        tom1HitController.SetColor(Color.magenta);
-        hihatHitController.SetColor(Color.green);
-        crashHitController.SetColor(Color.yellow);
-        rideHitController.SetColor(Color.cyan);
+        kickHitController.SetColor(kickColor);
+        snareHitController.SetColor(snareColor);
+        tom1HitController.SetColor(tomColor);
+        hihatHitController.SetColor(hihatColor);
+        crashHitController.SetColor(crashColor);
+        rideHitController.SetColor(rideColor);
 
-        kickHitController2.SetColor(Color.red);
-        snareHitController2.SetColor(Color.blue);
-        tom1HitController2.SetColor(Color.magenta);
-        hihatHitController2.SetColor(Color.green);
-        crashHitController2.SetColor(Color.yellow);
-        rideHitController2.SetColor(Color.cyan);
+        kickHitController2.SetColor(kickColor);
+        snareHitController2.SetColor(snareColor);
+        tom1HitController2.SetColor(tomColor);
+        hihatHitController2.SetColor(hihatColor);
+        crashHitController2.SetColor(crashColor);
+        rideHitController2.SetColor(rideColor);
 
         snareRotation = snareHitController.transform.rotation;
         rideRotation = rideHitController.transform.rotation;
@@ -179,6 +182,7 @@ public class DrumController : MonoBehaviour
             Tuple<float,int,float> tuple = new Tuple<float, int, float> ( fixStartTime + 4f, noteName, noteVelocity );
             noteList.Add( tuple );
         }
+        CreateAllNotes();
     }
 
     public void StartInterpretation() 
@@ -195,6 +199,42 @@ public class DrumController : MonoBehaviour
         else 
         {
             midifilePath = null;
+        }
+    }
+
+    private void CreateAllNotes() 
+    {
+        GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
+        foreach (GameObject obj in notas)
+        {
+            Destroy(obj);
+        }
+        foreach (var tuple in noteList) 
+        {
+            var offset = (tuple.Item1 * 250f * 2f) - 200f;
+            switch (tuple.Item2) 
+            {
+                case 36:
+                    intentoPrimero.CreateNotes(offset, "kick", kickColor);
+                    break;
+                case 38:
+                    intentoPrimero.CreateNotes(offset, "snare", snareColor);
+                    break;
+                case 46:
+                    intentoPrimero.CreateNotes(offset, "hihat", hihatColor);
+                    break;
+                case 48:
+                    intentoPrimero.CreateNotes(offset, "tom1", tomColor);
+                    break;
+                case 49 or 52 or 55 or 57:
+                    intentoPrimero.CreateNotes(offset, "crash", crashColor);
+                    break;
+                case 51 or 53 or 59:
+                    intentoPrimero.CreateNotes(offset, "ride", rideColor);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     public List<Tuple<float, int, float>> GetMidiList() 
