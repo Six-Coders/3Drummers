@@ -21,6 +21,8 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
     [SerializeField] public MultimediaLineController lineController;
     [SerializeField] public DrumMIDIController drumMIDIController;
+    [SerializeField] public UIPerso.PersoSetup persoSetup;
+    [SerializeField] public GameObject UIProcessIndicator;
 
     private StyleBackground intensityIconEnable;
     private StyleBackground intensityIconDisable;
@@ -56,6 +58,7 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private Button uploadButton;
     [SerializeField] private Button processButton;
     [SerializeField] private Button testButton;
+    [SerializeField] private Button persoButton;
     [SerializeField] private Button mediaPlayButton;
     [SerializeField] private Button mediaStopButton;
     [SerializeField] private Button settingsButton;
@@ -88,6 +91,9 @@ public class UIMenuController : MonoBehaviour
     private float audioLength;
 
     bool isRecording = false;
+
+    //GameObject
+    public GameObject DrumZurda;
     private void Start()
     {
         string LibraryName = "/Lib";
@@ -100,6 +106,8 @@ public class UIMenuController : MonoBehaviour
         intensityIconDisable = new StyleBackground(iconDisable);
         RefreshLibrary();  // Initialize the song library
         multimediaLine.lowLimit = 0;
+        DrumZurda.SetActive(false);
+        UIProcessIndicator.SetActive(false);
     }
     private void Update()
     {
@@ -128,6 +136,7 @@ public class UIMenuController : MonoBehaviour
         AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
 
         // Get references to UI elements and set up event handlers
+        persoButton = root.Q<Button>("buttonPerso");
         uploadButton = root.Q<Button>("buttonUpload");
         processButton = root.Q<Button>("buttonProcess");
         mediaPlayButton = root.Q<Button>("buttonPlay");
@@ -139,6 +148,7 @@ public class UIMenuController : MonoBehaviour
         exportMIDIButton = root.Q<Button>("buttonExportMIDI");
         testButton = root.Q<Button>("buttonTest");
 
+        fileName = root.Q<Label>("textFilename");
         playIconElement = root.Q<VisualElement>("iconPlay");
         intensityIcon = root.Q<VisualElement>("iconIntensity");
         playIconElement.style.backgroundImage = playIconBackground;
@@ -192,6 +202,9 @@ public class UIMenuController : MonoBehaviour
                 isIntensitySet = true;
                 intensityIcon.style.backgroundImage = intensityIconEnable;
             }
+        };
+        persoButton.clicked += () => {
+            persoSetup.CreatePersoWindow();
         };
         // Set up event handler for selecting a song in the library
         libraryListView.itemsChosen += async (evt) =>
@@ -258,7 +271,6 @@ public class UIMenuController : MonoBehaviour
             AudioPlayer.Stop();
             AudioPlayer.Play();
             drumMIDIController.Recording(loopStartTime,loopEndTime);
-            Debug.Log(AudioPlayer.time);
         }
         else 
         {
@@ -285,10 +297,12 @@ public class UIMenuController : MonoBehaviour
                 bussy = true;
                 processButton.SetEnabled(false);
                 alertDialog.CreateDialog("The file is processing", "This may take a while.");
+                UIProcessIndicator.SetActive(true);
                 await Task.Run(() => { ProcessSong(); }) ;  // Start a background task to process the song
                 bussy = false;
                 processButton.SetEnabled(true);
                 alertDialog.CreateDialog("The file is processed", "The song is ready and loaded in the library.");
+                UIProcessIndicator.SetActive(false);
                 RefreshLibrary();
             }
             else 
@@ -465,17 +479,20 @@ public class UIMenuController : MonoBehaviour
                 audiofileName = paths[0].Replace('\\', '/');
                 audioFilePath = audiofileName;
                 processButton.SetEnabled(true);
+                fileName.text = "File: " + Path.GetFileName(audiofileName);
             }
             else
             {
                 processButton.SetEnabled(false);
                 alertDialog.CreateDialog("Import Error", "The file format is invalid.");
+                fileName.text = "File:";
             }
         }
         else
         {
             processButton.SetEnabled(false);
             alertDialog.CreateDialog("Import Error", "Not file selected.");
+            fileName.text = "File";
         }
     }
     //Función para buscar canciones en un directorio (el default)
@@ -608,7 +625,6 @@ public class UIMenuController : MonoBehaviour
         }
         string songAuxPath = songDirectory.Replace('\\', '/');
         string songDir = songAuxPath.Replace("/", "//");
-        Debug.Log("Song Dir: " + songDir);
         if (songDir != null)
         {
             AudioClip audioClip = null;

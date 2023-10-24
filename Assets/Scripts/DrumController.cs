@@ -19,6 +19,14 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController hihatHitController;
     [SerializeField] public HitController crashHitController;
     [SerializeField] public HitController rideHitController;
+
+    [SerializeField] public HitController kickHitController2;
+    [SerializeField] public HitController snareHitController2;
+    [SerializeField] public HitController tom1HitController2;
+    [SerializeField] public HitController hihatHitController2;
+    [SerializeField] public HitController crashHitController2;
+    [SerializeField] public HitController rideHitController2;
+
     [SerializeField] public Generador3 intentoPrimero;
 
     private List<Vector3> drumElements = new List<Vector3> ();
@@ -84,6 +92,13 @@ public class DrumController : MonoBehaviour
         crashHitController.SetColor(Color.yellow);
         rideHitController.SetColor(Color.cyan);
 
+        kickHitController2.SetColor(Color.red);
+        snareHitController2.SetColor(Color.blue);
+        tom1HitController2.SetColor(Color.magenta);
+        hihatHitController2.SetColor(Color.green);
+        crashHitController2.SetColor(Color.yellow);
+        rideHitController2.SetColor(Color.cyan);
+
         snareRotation = snareHitController.transform.rotation;
         rideRotation = rideHitController.transform.rotation;
     }
@@ -108,28 +123,35 @@ public class DrumController : MonoBehaviour
                     {
                         alpha = tuple.Item3;
                     }
-                    switch (tuple.Item2){
+                    switch (tuple.Item2)
+                    {
                         case 36:
                             kickHitController.SetAlpha(alpha);
+                            kickHitController2.SetAlpha(alpha);
                             kickHitController.transform.localScale = new Vector3(1.55f, 1.55f, 1.55f);
                             break;
                         case 38:
                             snareHitController.SetAlpha(alpha);
+                            snareHitController2.SetAlpha(alpha);
                             snareHitController.transform.Rotate(new Vector3(-2f, 0f, 0f));
                             break;
                         case 48:
                             tom1HitController.SetAlpha(alpha);
+                            tom1HitController2.SetAlpha(alpha);
                             break;
                         case 46:
                             hihatHitController.SetAlpha(alpha);
+                            hihatHitController2.SetAlpha(alpha);
                             break;
 
                         case 49 or 52 or 55 or 57:
                             crashHitController.SetAlpha(alpha);
+                            crashHitController2.SetAlpha(alpha);
                             break;
-                        
+
                         case 51 or 53 or 59:
                             rideHitController.SetAlpha(alpha);
+                            rideHitController2.SetAlpha(alpha);
                             rideHitController.transform.Rotate(new Vector3(0.25f, -10f, 1f));
                             break;
                     }

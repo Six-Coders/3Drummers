@@ -2,16 +2,19 @@ using UnityEngine;
 using MidiJack;
 using System.Collections.Generic;
 using System;
+using AlertDialog;
 
 public class DrumMIDIController : MonoBehaviour
 {
     public DrumController drumController;
+    [SerializeField] public AlertDialog.Popup_Setup alertDialog;
 
     List<Tuple<float, int, float>> recordingList = new List<Tuple<float, int, float>>();
     bool isRecording = false;
     float recordingTime;
     float startingLoopTime;
-    int score = 0;
+    float percentScore;
+    float score = 0;
     float tol = 0.125f;
     float errorMargin = 0;
     float endingLoopTime;
@@ -25,6 +28,7 @@ public class DrumMIDIController : MonoBehaviour
     }
     void NoteOn(MidiChannel channel, int note, float velocity)
     {
+        Debug.Log(note);
         if (isRecording) 
         {
             Tuple<float, int, float> tuple = new Tuple<float, int, float>(Time.time - recordingTime + 2f + startingLoopTime, note, velocity);
@@ -44,7 +48,6 @@ public class DrumMIDIController : MonoBehaviour
     {
         isRecording = false;
         Evaluation();
-        Debug.Log("Puntaje: " + score);
     }
     private void Evaluation() 
     {
@@ -54,15 +57,13 @@ public class DrumMIDIController : MonoBehaviour
         List < Tuple<float, int, float> > filterList = new List<Tuple<float, int, float>> ();
         foreach (var tuple in originalMidi) 
         {
-            if (tuple.Item1 >= startingLoopTime && tuple.Item1 <= endingLoopTime) 
+            Debug.Log("Tiempo: "+tuple.Item1);
+            if (tuple.Item1 >= startingLoopTime && tuple.Item1 <= endingLoopTime + 2f) 
             { 
                 filterList.Add(tuple);
                 Debug.Log("Agregue una tupla...");
             }
         }
-        Debug.Log("filterList: " + filterList.Count.ToString());
-        Debug.Log("recordingList: " + recordingList.Count.ToString());
-
         foreach (var tupleOriginal in filterList) 
         {
             foreach (var tupleRecording in recordingList) 
@@ -98,7 +99,7 @@ public class DrumMIDIController : MonoBehaviour
                             }
                         case 46: 
                             {
-                                if (tupleRecording.Item2 == 42 || tupleRecording.Item2 == 46) 
+                                if (tupleRecording.Item2 == 42 || tupleRecording.Item2 == 46 || tupleRecording.Item2 == 26) 
                                 {
                                     score += 1;
                                 }
@@ -125,5 +126,38 @@ public class DrumMIDIController : MonoBehaviour
             }
         }
         score -= Math.Abs(filterList.Count - recordingList.Count);
+        var totalNotes = filterList.Count;
+        if (totalNotes == 0) 
+        {
+            totalNotes = 1;
+        }
+        Debug.Log("Score: " + score.ToString());
+        Debug.Log("TotalNotes: " + totalNotes.ToString());
+        float division = score / totalNotes;
+        Debug.Log("Division: " + division.ToString());
+        percentScore = division * 100f;
+        Debug.Log("PercentScore: "+percentScore.ToString());
+        if (percentScore < 0) 
+        {
+            percentScore = 0;
+        }
+        var result = "";
+        if (percentScore <= 40)
+        {
+            result = "Bad";
+        }
+        else if (percentScore <= 60)
+        {
+            result = "Good";
+        }
+        else if (percentScore <= 80)
+        {
+            result = "Very Good";
+        }
+        else 
+        {
+            result = "Excellent!";
+        }
+        alertDialog.CreateDialog("Result", "Your Score is: " + result+" with %"+percentScore.ToString()+" correct notes.");
     }
 }
