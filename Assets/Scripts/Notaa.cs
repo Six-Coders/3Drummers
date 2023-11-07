@@ -8,12 +8,7 @@ public class MovimientoNota : MonoBehaviour
     public float velocidad = 5000;
     public Vector2 direccion = Vector2.left; // Mueve la nota hacia la izquierda
     public AudioSource audioPlayer;
-    public Sprite ghostNote;
     public Image image;
-    public void ChangeSprite() 
-    { 
-        image.sprite = ghostNote;
-    }
     private void OnEnable()
     {
         image = GetComponent<Image>();
@@ -23,10 +18,6 @@ public class MovimientoNota : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (image.color.a < 0.3) 
-        {
-            ChangeSprite();
-        }
         if ( audioPlayer != null)
         {
             if (audioPlayer.isPlaying)

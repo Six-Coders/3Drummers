@@ -2,32 +2,32 @@
     <Style src="project://database/Assets/UI/Resources/UIPanelStyle.uss?fileID=7433441132597879392&amp;guid=d0926cec82debb34993e5bac76c97abb&amp;type=3#UIPanelStyle" />
     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; flex-shrink: 1; flex-wrap: nowrap; align-self: auto; justify-content: flex-start; align-items: flex-start; cursor: initial;">
         <ui:VisualElement name="PanelUI" style="flex-grow: 1; background-color: rgb(22, 22, 22); height: 100%; width: 10%; flex-direction: column; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-shrink: initial; flex-basis: auto; max-width: none;">
-            <ui:Label tabindex="-1" text="Menu" display-tooltip-when-elided="true" name="menuTitle" class="normalText" style="-unity-text-align: upper-center; font-size: 32px; margin-bottom: 14px; -unity-font-style: bold;" />
+            <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row;">
+                <ui:Button text="Show Songs" display-tooltip-when-elided="true" name="songsButton" class="buttonVista" />
+                <ui:Button text="Show Exercises" display-tooltip-when-elided="true" name="exercisesButton" class="buttonVista" />
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="Menu" display-tooltip-when-elided="true" name="menuTitle" class="normalText" style="-unity-text-align: upper-center; font-size: 32px; margin-bottom: 14px; -unity-font-style: bold; margin-top: 8px; padding-top: 8px;" />
             <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10%; width: auto; min-height: auto; min-width: auto; position: relative; bottom: auto; top: auto; max-width: none; max-height: none; flex-shrink: 1;">
-                <ui:Button text="Upload Song" display-tooltip-when-elided="true" name="buttonUpload" class="button" />
+                <ui:Button text="Upload Song" display-tooltip-when-elided="true" name="buttonUpload" class="button" style="width: 50%; height: 50%;" />
                 <ui:Label tabindex="-1" text="File:" display-tooltip-when-elided="true" name="textFilename" class="normalText" style="height: 27px; width: 162px; font-size: 20px;" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row; height: 10%; bottom: auto; position: relative; width: 100%; flex-shrink: 1; align-self: center; justify-content: flex-start;">
                 <ui:Button text="Process Song" display-tooltip-when-elided="true" name="buttonProcess" class="button" style="white-space: nowrap;" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="trackSelection" tabindex="0" style="height: 50%; width: 45%; white-space: normal; flex-direction: row; flex-shrink: 0; flex-basis: auto; flex-wrap: nowrap; flex-grow: 0; justify-content: flex-start; align-items: stretch; min-width: initial; min-height: initial; color: rgb(255, 255, 255); -unity-text-align: upper-left; text-overflow: clip; margin-top: 4px; margin-bottom: 4px; font-size: 16px; -unity-font-style: bold;" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="trackSelection" tabindex="0" class="dropdownTrack" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); height: 10%;">
                 <ui:Button text="Export MIDI" display-tooltip-when-elided="true" name="buttonExportMIDI" class="button" />
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-direction: row;">
-                <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 32px; -unity-font-style: bold; bottom: auto; position: relative; top: auto; left: auto; -unity-text-align: upper-center;" />
-                <ui:Button text="Show Exercises" display-tooltip-when-elided="true" name="exercisesButton" class="button" style="width: 25%;" />
-                <ui:Button text="Show Songs" display-tooltip-when-elided="true" name="songsButton" class="button" style="width: 25%;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-shrink: initial; flex-direction: row; align-items: stretch; align-self: stretch; justify-content: space-between; margin-left: 1px; margin-right: 1px; margin-top: 20px; margin-bottom: 1px;">
+            <ui:Label tabindex="-1" text="Library" display-tooltip-when-elided="true" name="LibraryTittle" class="normalText" style="align-self: center; font-size: 32px; -unity-font-style: bold; bottom: auto; position: relative; top: auto; left: auto; -unity-text-align: upper-center;" />
+            <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-shrink: initial; flex-direction: row; align-items: stretch; align-self: stretch; justify-content: space-between; margin-left: 1px; margin-right: 1px; margin-top: 20px; margin-bottom: 1px; padding-left: 8px; padding-right: 8px;">
                 <ui:Label tabindex="-1" text="Song" display-tooltip-when-elided="true" name="Label" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
                 <ui:Label tabindex="-1" text="Difficulty" display-tooltip-when-elided="true" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
                 <ui:Label tabindex="-1" text="Tempo" display-tooltip-when-elided="true" class="normalText" style="-unity-text-align: upper-left; font-size: 20px; width: 33%; flex-grow: initial; flex-shrink: initial;" />
             </ui:VisualElement>
-            <ui:ListView focusable="true" name="libraryListView" show-border="true" show-alternating-row-backgrounds="All" horizontal-scrolling="false" header-title="Library" reorder-mode="Animated" show-foldout-header="false" show-add-remove-footer="false" fixed-item-height="1" virtualization-method="DynamicHeight" style="flex-grow: initial; align-items: stretch; justify-content: space-around;" />
+            <ui:ListView focusable="true" name="libraryListView" show-border="true" show-alternating-row-backgrounds="All" horizontal-scrolling="false" header-title="Library" reorder-mode="Animated" show-foldout-header="false" show-add-remove-footer="false" fixed-item-height="1" virtualization-method="DynamicHeight" style="flex-grow: initial; align-items: stretch; justify-content: space-around; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 8px; padding-right: 8px;" />
         </ui:VisualElement>
-        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: stretch; flex-direction: column; width: 642px; min-width: initial; min-height: initial; justify-content: flex-start; align-items: center; height: 10%; top: auto; bottom: auto;">
-            <ui:VisualElement name="MediaPlayerUI" focusable="false" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: relative; height: -444px; width: 180px; top: 0; left: 0; flex-direction: row; justify-content: center; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; bottom: auto; margin-top: 0; align-self: auto; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-items: auto; margin-bottom: 0;">
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: stretch; flex-direction: column; width: 30%; min-width: initial; min-height: initial; justify-content: flex-start; align-items: center; height: initial; top: auto; bottom: auto; flex-shrink: initial; flex-basis: auto;">
+            <ui:VisualElement name="MediaPlayerUI" focusable="false" style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); position: relative; height: auto; width: auto; top: 0; left: 0; flex-direction: row; justify-content: flex-start; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; bottom: auto; margin-top: 0; align-self: auto; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-items: auto; margin-bottom: 0; flex-shrink: 1;">
                 <ui:Button display-tooltip-when-elided="true" name="buttonDecrease" class="mediaButton" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">
                     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/increaseIcon.png?fileID=2800000&amp;guid=bcbf590227ec7ae4f99dbc0d65c5cbbc&amp;type=3#increaseIcon&apos;); scale: -1 1; margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
                 </ui:Button>
@@ -44,14 +44,19 @@
                     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/recordingIcon.png?fileID=2800000&amp;guid=0c02509ad9c9a08499b024b394294649&amp;type=3#recordingIcon&apos;); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 7px; margin-right: 7px; margin-top: 7px; margin-bottom: 7px;" />
                 </ui:Button>
             </ui:VisualElement>
-            <ui:MinMaxSlider picking-mode="Ignore" min-value="10" max-value="12" low-limit="-10" high-limit="40" name="multimediaLine" style="flex-grow: 1; flex-shrink: 0; padding-left: 64px; padding-right: 64px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);" />
+            <ui:VisualElement style="flex-grow: initial; background-color: rgba(0, 0, 0, 0); flex-shrink: 0; height: auto; flex-basis: auto; flex-wrap: nowrap; flex-direction: column; width: 100%;">
+                <ui:ProgressBar value="22" name="multimediaBar" class="multimediaBar" style="margin-top: 4px; transform-origin: center; translate: 0 12px; padding-top: 0; height: auto; scale: 1 0.5; padding-left: 64px; padding-right: 64px; background-color: rgba(0, 0, 0, 0);" />
+                <ui:MinMaxSlider picking-mode="Ignore" min-value="10" max-value="12" low-limit="-10" high-limit="40" name="multimediaLine" class="multimediaLine" style="flex-grow: initial; flex-shrink: 0; padding-left: 64px; padding-right: 64px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); translate: 0 -16px;" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Button text="Button" display-tooltip-when-elided="true" name="buttonIntensity" class="buttonPanel">
-            <ui:VisualElement name="iconIntensity" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/icon_intensidad1.png?fileID=2800000&amp;guid=f502d3cd5e1205640a269e5a27923bcf&amp;type=3#icon_intensidad1&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" name="buttonIntensity" class="buttonPanel">
+            <ui:VisualElement name="iconIntensity" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/icons/dynamicsIcon.png?fileID=2800000&amp;guid=8b869ee296521744f8c36c888390de82&amp;type=3#dynamicsIcon&apos;); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;" />
         </ui:Button>
         <ui:Button display-tooltip-when-elided="true" name="buttonSettings" class="buttonPanel" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; width: 64px; height: 64px;">
-            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/settingsIcon.png?fileID=2800000&amp;guid=dfe6fcd782565f4418bf5055d5005579&amp;type=3#settingsIcon&apos;);" />
+            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/icons/mixerIcon.png?fileID=2800000&amp;guid=9d9fd2eb06a29a44aa45cd268fbf118d&amp;type=3#mixerIcon&apos;);" />
         </ui:Button>
-        <ui:Button text="Button" display-tooltip-when-elided="true" name="buttonPerso" class="buttonPanel" />
+        <ui:Button text="Button" display-tooltip-when-elided="true" name="buttonPerso" class="buttonPanel">
+            <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&apos;project://database/Assets/Sprites/settingsIcon.png?fileID=2800000&amp;guid=dfe6fcd782565f4418bf5055d5005579&amp;type=3#settingsIcon&apos;); margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+        </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

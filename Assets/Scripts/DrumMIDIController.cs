@@ -21,9 +21,28 @@ public class DrumMIDIController : MonoBehaviour
     float endingLoopTime;
     bool isConected;
 
+    //Drum HUD elements! (for animation)
+    public Transform kickTransform;
+    public Transform snareTransform;
+    public Transform hihatTransform;
+    public Transform rideTransform;
+    public Transform crashTransform;
+    public Transform tomTransform;
+
+    private Dictionary<int, Transform> drumMap = new Dictionary<int, Transform>();
+
+
     void Start()
     {
         MidiMaster.noteOnDelegate += NoteOn;
+        drumMap.Add(36, kickTransform);
+        drumMap.Add(38, snareTransform);
+        drumMap.Add(42, hihatTransform);
+        drumMap.Add(46, hihatTransform);
+        drumMap.Add(43, tomTransform);
+        drumMap.Add(45, tomTransform);
+        drumMap.Add(48, tomTransform);
+        drumMap.Add(49, crashTransform);
     }
     void Update()
     {
@@ -40,15 +59,37 @@ public class DrumMIDIController : MonoBehaviour
             alertDialog.CreateDialog("Notification", "MIDI device " + inputDevice.Name + " is disconected.");
             inputDevice = null;
         }
-        
+        foreach (var t in drumMap) 
+        {
+            Transform transformElement = t.Value;
+            if (transformElement.localScale.x > 1 && transformElement.localScale.y > 1)
+            {
+                transformElement.localScale -= new Vector3(0.05f, 0.05f, 0);
+            }
+            else 
+            {
+                transformElement.localScale = new Vector3(1, 1, 0);
+            }
+            
+        }
     }
     void NoteOn(MidiChannel channel, int note, float velocity)
     {
         Debug.Log(note);
-        if (isRecording) 
+        if (velocity > 0) 
         {
-            Tuple<float, int, float> tuple = new Tuple<float, int, float>(Time.time - recordingTime + 2f + startingLoopTime, note, velocity);
-            recordingList.Add(tuple);
+            if (isRecording)
+            {
+                Tuple<float, int, float> tuple = new Tuple<float, int, float>(Time.time - recordingTime + 2f + startingLoopTime, note, velocity);
+                recordingList.Add(tuple);
+            }
+            if (drumMap.ContainsKey(note))
+            {
+                var t = drumMap[note];
+                Debug.Log("Velocity: ");
+                Debug.Log(velocity);
+                t.localScale = new Vector3(1 + velocity * 2, 1 + velocity * 2, 0);
+            }
         }
     }
     public void Recording(float startTime, float endTime) 

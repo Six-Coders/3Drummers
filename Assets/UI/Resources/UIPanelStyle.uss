@@ -1,13 +1,13 @@
 .button {
-    margin-left: 5px;
+    margin-left: 10px;
     margin-right: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
     background-color: rgb(190, 67, 67);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
     height: 50%;
     -unity-font-style: bold;
     font-size: 16px;
@@ -26,15 +26,15 @@
 
 .button:hover {
     width: 50%;
-    margin-left: 5px;
+    margin-left: 10px;
     margin-right: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
     background-color: rgb(128, 43, 43);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
     height: 50%;
     -unity-font-style: bold;
     font-size: 16px;
@@ -50,38 +50,10 @@
     border-right-color: rgb(255, 255, 255);
     border-top-color: rgb(255, 255, 255);
     border-bottom-color: rgb(255, 255, 255);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-
-.dropdown {
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    color: rgb(255, 255, 255);
-    font-size: 16px;
-    background-color: rgba(255, 255, 255, 0.11);
-    width: 240px;
-    height: 24px;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    overflow: hidden;
-    visibility: visible;
-    position: absolute;
-    left: auto;
-    flex-direction: row;
-    flex-basis: auto;
-    flex-grow: 0;
-    flex-shrink: 1;
-    -unity-text-align: middle-left;
-    max-width: 256px;
-    max-height: 48px;
-    flex-wrap: nowrap;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
 }
 
 .normalText {
@@ -199,8 +171,6 @@
     border-bottom-width: 2px;
 }
 
-
-
 .unity-base-popup-field__arrow {
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
@@ -211,18 +181,149 @@
     -unity-font-style: bold;
 }
 
-.unity-min-max-slider__tracker {
-    background-color: rgba(0,0,0,0);
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-bottom-width: 0px;
+.multimediaLine .unity-min-max-slider__tracker {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
 }
 
-.unity-min-max-slider__dragger {
-    background-color: rgba(0,0,0,0);
+.multimediaLine .unity-min-max-slider__dragger {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.buttonVista {
+    width: 25%;
+    height: auto;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 0;
+    padding-top: 4px;
+    padding-bottom: 2%;
+    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    -unity-text-align: upper-left;
+    background-color: rgb(22, 22, 22);
+    align-items: auto;
+    justify-content: space-around;
+    align-self: auto;
+    white-space: normal;
+    font-size: 16px;
+    border-left-color: rgb(118, 118, 118);
+    border-right-color: rgb(118, 118, 118);
+    border-top-color: rgb(118, 118, 118);
+    border-bottom-color: rgb(118, 118, 118);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.buttonVista:active {
+    width: 25%;
+    height: auto;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 0;
+    padding-top: 4px;
+    padding-bottom: 2%;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: upper-left;
+    background-color: rgb(113, 113, 113);
+    align-items: auto;
+    justify-content: space-around;
+    align-self: auto;
+    white-space: normal;
+    font-size: 16px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+}
+
+.dropdownTrack .unity-base-field__input {
+    background-color: rgba(190, 67, 67, 0.3);
+    border-left-color: rgb(190, 67, 67);
+    border-right-color: rgb(190, 67, 67);
+    border-top-color: rgb(190, 67, 67);
+    border-bottom-color: rgb(190, 67, 67);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.dropdownTrack .unity-base-popup-field__arrow {
+    -unity-background-image-tint-color: rgb(230, 120, 120);
+}
+
+.dropdownTrack .unity-base-dropdown__container-outer {
+    border-left-color: rgb(190, 67, 67);
+    border-right-color: rgb(190, 67, 67);
+    border-top-color: rgb(190, 67, 67);
+    border-bottom-color: rgb(190, 67, 67);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.dropdownTrack {
+    flex-grow: 0;
+    flex-shrink: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+    width: 300px;
+    height: 54px;
+}
+
+.multimediaBar {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.multimediaBar .unity-progress-bar__progress {
+    background-color: rgb(190, 67, 67);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+
+}
+
+.multimediaBar .unity-progress-bar__background {
+    background-color: rgb(50, 20, 20);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
     border-left-width: 0px;
     border-right-width: 0px;
-    border-top-width: 0px;
     border-bottom-width: 0px;
+    border-top-width: 0px;
+}
+
+.multimediaLine {
 }

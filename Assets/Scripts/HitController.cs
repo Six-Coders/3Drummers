@@ -5,14 +5,20 @@ using UnityEngine;
 public class HitController : MonoBehaviour
 {
     public Material material;
+    public AudioController audioController;
     private float currentAlpha = 0f;
     private Color color;
     private float SpeedChange = 2f;
-    private AudioSource audioPlayer;
-    private void OnEnable()
+    public ParticleSystem particleSystem;
+    private bool firstHit = false;
+    private float rateMultiplier = 100.0f;
+
+    private void Start()
     {
-        GameObject obj = GameObject.FindGameObjectWithTag("AudioPlayer");
-        audioPlayer = obj.GetComponent<AudioSource>();
+        if (particleSystem != null) 
+        {
+            particleSystem.Stop();
+        }
     }
     void Update()
     {
@@ -22,17 +28,27 @@ public class HitController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (audioPlayer != null) 
+        if (audioController != null) 
         {
-            if (audioPlayer.isPlaying) 
+            if (audioController.AudioIsPlaying()) 
             {
                 if (currentAlpha > 0)
                 {
                     currentAlpha -= Time.deltaTime * SpeedChange;
+                    if (!firstHit) 
+                    {
+                        if (particleSystem != null) 
+                        {
+                            particleSystem.Emit((int)(currentAlpha * rateMultiplier * 10));
+                            particleSystem.Stop();
+                        }
+                    }
+                    firstHit = true;
                 }
                 else
                 {
                     currentAlpha = 0f;
+                    firstHit = false;
                 }
                 material.SetFloat("_transparency", currentAlpha);
             }

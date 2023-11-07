@@ -23,6 +23,19 @@ public class DrumController : MonoBehaviour
     [SerializeField] public HitController crashHitController2;
     [SerializeField] public HitController rideHitController2;
 
+    [SerializeField] public GameObject noteContainer;
+    [SerializeField] public GameObject notePrefab;
+
+    [SerializeField] public Image kickImage;
+    [SerializeField] public Image snareImage;
+    [SerializeField] public Image hihatImage;
+    [SerializeField] public Image tomImage;
+    [SerializeField] public Image rideImage;
+    [SerializeField] public Image crashImage;
+
+    public Dictionary<int,Vector3> drumPositions = new Dictionary<int,Vector3>();
+    public Dictionary<int, Color> drumColors = new Dictionary<int, Color>();
+
     private Color kickColor = new Color(255/255f, 71 / 255f, 71 / 255f);
     private Color snareColor = new Color(88 / 255f, 88 / 255f, 255 / 255f);
     private Color hihatColor = new Color(115 / 255f, 255 / 255f, 115 / 255f);
@@ -30,7 +43,7 @@ public class DrumController : MonoBehaviour
     private Color rideColor = new Color(134 / 255f, 255 / 255f, 255 / 255f);
     private Color crashColor = new Color(253 / 255f, 253 / 255f, 123 / 255f);
 
-    [SerializeField] public Generador3 intentoPrimero;
+    //[SerializeField] public Generador3 intentoPrimero;
 
     private List<Vector3> drumElements = new List<Vector3> ();
     public UIMenuController menuController;
@@ -39,7 +52,8 @@ public class DrumController : MonoBehaviour
 
     private float outlineThick = 0.015f;
     public float currentAlpha = 0f;
-    public AudioSource audioPlayer;
+    //public AudioSource audioPlayer;
+    public AudioController audioController;
 
     private string midifilePath;
     private List<Tuple<float, int, float>> noteList = new List<Tuple<float, int, float>>();
@@ -47,8 +61,7 @@ public class DrumController : MonoBehaviour
 
     public float tolerance = 3f;
 
-    private Quaternion snareRotation;
-    private Quaternion rideRotation;
+    public float noteSpeed = 2f;
     private void ActivateOutline() 
     {
         foreach (Material material in overlineMaterials) 
@@ -85,6 +98,32 @@ public class DrumController : MonoBehaviour
             material.SetFloat("_Outline_Thickness", 0f);
         }
     }
+    private void OnEnable()
+    {
+        drumPositions.Add(36, kickImage.rectTransform.localPosition);
+        drumPositions.Add(38, snareImage.rectTransform.localPosition);
+        drumPositions.Add(46, hihatImage.rectTransform.localPosition);
+        drumPositions.Add(48, tomImage.rectTransform.localPosition);
+        drumPositions.Add(51, rideImage.rectTransform.localPosition);
+        drumPositions.Add(53, rideImage.rectTransform.localPosition);
+        drumPositions.Add(59, rideImage.rectTransform.localPosition);
+        drumPositions.Add(49, crashImage.rectTransform.localPosition);
+        drumPositions.Add(52, crashImage.rectTransform.localPosition);
+        drumPositions.Add(55, crashImage.rectTransform.localPosition);
+        drumPositions.Add(57, crashImage.rectTransform.localPosition);
+
+        drumColors.Add(36, kickColor);
+        drumColors.Add(38, snareColor);
+        drumColors.Add(46, hihatColor);
+        drumColors.Add(48, tomColor);
+        drumColors.Add(51, rideColor);
+        drumColors.Add(53, rideColor);
+        drumColors.Add(59, rideColor);
+        drumColors.Add(49, crashColor);
+        drumColors.Add(52, crashColor);
+        drumColors.Add(55, crashColor);
+        drumColors.Add(57, crashColor);
+    }
     private void Start()
     {
         //Set Colors for every drum element
@@ -102,15 +141,11 @@ public class DrumController : MonoBehaviour
         crashHitController2.SetColor(crashColor);
         rideHitController2.SetColor(rideColor);
 
-        snareRotation = snareHitController.transform.rotation;
-        rideRotation = rideHitController.transform.rotation;
     }
     void FixedUpdate()
     {
         kickHitController.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        snareHitController.transform.rotation = snareRotation;
-        rideHitController.transform.rotation = rideRotation;
-        if (audioPlayer.isPlaying) 
+        if (audioController.AudioIsPlaying()) 
         {
             DeactivateOutline();
         }
@@ -119,7 +154,7 @@ public class DrumController : MonoBehaviour
             for (int i = 0; i < noteList.Count; i++)
             {
                 var tuple = noteList[i];
-                if (Mathf.Abs(tuple.Item1 - audioPlayer.time - 2f) < tolerance+0.0125 && audioPlayer.isPlaying) 
+                if (Mathf.Abs(tuple.Item1 - audioController.audioPlayerTime - 2f) < tolerance+0.0125 && audioController.AudioIsPlaying()) 
                 {
                     float alpha = 1;
                     if (menuController.isIntensitySet)
@@ -131,12 +166,10 @@ public class DrumController : MonoBehaviour
                         case 36:
                             kickHitController.SetAlpha(alpha);
                             kickHitController2.SetAlpha(alpha);
-                            kickHitController.transform.localScale = new Vector3(1.55f, 1.55f, 1.55f);
                             break;
                         case 38:
                             snareHitController.SetAlpha(alpha);
                             snareHitController2.SetAlpha(alpha);
-                            snareHitController.transform.Rotate(new Vector3(-2f, 0f, 0f));
                             break;
                         case 48:
                             tom1HitController.SetAlpha(alpha);
@@ -155,7 +188,6 @@ public class DrumController : MonoBehaviour
                         case 51 or 53 or 59:
                             rideHitController.SetAlpha(alpha);
                             rideHitController2.SetAlpha(alpha);
-                            rideHitController.transform.Rotate(new Vector3(0.25f, -10f, 1f));
                             break;
                     }
                 }
@@ -202,38 +234,25 @@ public class DrumController : MonoBehaviour
         }
     }
 
-    private void CreateAllNotes() 
+    public void CreateAllNotes(float loopStartTime = 0)
     {
         GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
-        foreach (GameObject obj in notas)
+        foreach (var nota in notas) 
         {
-            Destroy(obj);
+            Destroy(nota);
         }
-        foreach (var tuple in noteList) 
+        foreach (var note in noteList) 
         {
-            var offset = (tuple.Item1 * 250f * 2f) - 200f;
-            switch (tuple.Item2) 
+            if (drumPositions.ContainsKey(note.Item2)) 
             {
-                case 36:
-                    intentoPrimero.CreateNotes(offset, "kick", kickColor);
-                    break;
-                case 38:
-                    intentoPrimero.CreateNotes(offset, "snare", snareColor);
-                    break;
-                case 46:
-                    intentoPrimero.CreateNotes(offset, "hihat", hihatColor);
-                    break;
-                case 48:
-                    intentoPrimero.CreateNotes(offset, "tom1", tomColor);
-                    break;
-                case 49 or 52 or 55 or 57:
-                    intentoPrimero.CreateNotes(offset, "crash", crashColor);
-                    break;
-                case 51 or 53 or 59:
-                    intentoPrimero.CreateNotes(offset, "ride", rideColor);
-                    break;
-                default:
-                    break;
+                var newNote = Instantiate(notePrefab, noteContainer.transform);
+                float x = (noteSpeed * 250f * note.Item1) - 1100f;
+                Vector3 posFixed = new Vector3(x, drumPositions[note.Item2].y, drumPositions[note.Item2].z);
+                Image noteImage = newNote.GetComponent<Image>();
+                var fixedColor = drumColors[note.Item2];
+                fixedColor.a = note.Item3;
+                noteImage.color = fixedColor;
+                newNote.transform.localPosition = posFixed;
             }
         }
     }

@@ -11,26 +11,23 @@ using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using Melanchall.DryWetMidi.Core;
 using Debug = UnityEngine.Debug;
-using Unity.VisualScripting;
 
 public class UIMenuController : MonoBehaviour
 {
-    [SerializeField] public AudioSource AudioPlayer;
     [SerializeField] public DrumController drumController;
     [SerializeField] public List<SongData> songInfo = new List<SongData>();  // List to store song data
     [SerializeField] public AlertDialog.Popup_Setup alertDialog; //Alert system!
     [SerializeField] public UISettings.SettingsSetup settingsSetup; //Settings system!
-    [SerializeField] public MultimediaLineController lineController;
     [SerializeField] public DrumMIDIController drumMIDIController;
     [SerializeField] public UIPerso.PersoSetup persoSetup;
     [SerializeField] public GameObject UIProcessIndicator;
     [SerializeField] public GameObject notesContainer;
+    [SerializeField] public AudioController audioController;
 
     [SerializeField] private Button exercisesButton;
     [SerializeField] private Button songsButton;
+    
 
-    private StyleBackground intensityIconEnable;
-    private StyleBackground intensityIconDisable;
     public Sprite iconEnable;
     public Sprite iconDisable;
 
@@ -52,10 +49,11 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private List<string> songsLibrary = new List<string>();  // List of song names in the library
     [SerializeField] private List<string> songDirectories = new List<string>();  // List of song directories
     [SerializeField] private List<string> requiredFiles = new List<string>() { "drums.wav", "no_drums.wav", "drums.midi", "data.json" };  // Required files for each song
-    [SerializeField] private List<string> trackList = new List<string>() { "drums", "no_drums" };  // List of available tracks
+    public List<string> trackList = new List<string>() { "drums", "no drums", "full track"};  // List of available tracks
 
     private AudioClip track = null;  // Reference to the currently selected audio track
-    private bool audioIsPlaying = false;
+    private AudioClip[] tracks;
+
     public bool isIntensitySet = true;
 
     // Unity UI elements
@@ -75,8 +73,8 @@ public class UIMenuController : MonoBehaviour
     [SerializeField] private VisualElement playIconElement;
     [SerializeField] private ListView libraryListView;
     [SerializeField] private bool bussy = false;  // Indicates if a background process is busy
-    [SerializeField] private VisualElement intensityIcon;
     [SerializeField] private MinMaxSlider multimediaLine;
+    [SerializeField] private ProgressBar multimediaProgress;
 
     public Sprite playIcon;
     public Sprite pauseIcon;
@@ -87,6 +85,8 @@ public class UIMenuController : MonoBehaviour
     // Colors!
     private Color selectedSongColor = new Color32(130, 127, 160, 255);
     private Color unselectedSongColor = new Color32(29, 29, 29, 255);
+    private Color selectedColor = new Color32(113,113,113,255);
+    private Color unSelectedColor = new Color32(22, 22, 22,255);
 
     // Labels
     private Label fileName;
@@ -110,16 +110,18 @@ public class UIMenuController : MonoBehaviour
         libPath = Application.persistentDataPath + LibraryName;
         playIconBackground = new StyleBackground(playIcon);
         pauseIconBackground = new StyleBackground(pauseIcon);
-        intensityIconEnable = new StyleBackground(iconEnable);
-        intensityIconDisable = new StyleBackground(iconDisable);
+
         RefreshLibrary(libPath);  // Initialize the song library
+        songsButton.style.backgroundColor = selectedColor;
+        exercisesButton.style.backgroundColor = unSelectedColor;
         multimediaLine.lowLimit = 0;
         DrumZurda.SetActive(false);
         UIProcessIndicator.SetActive(false);
+        intensityButton.style.backgroundColor = selectedColor;
     }
     private void Update()
     {
-        if (AudioPlayer.isPlaying)
+        if (audioController.AudioIsPlaying())
         {
             playIconElement.style.backgroundImage = pauseIconBackground;
         }
@@ -128,21 +130,22 @@ public class UIMenuController : MonoBehaviour
             playIconElement.style.backgroundImage = playIconBackground;
         }
 
-        if (AudioPlayer.time > loopEndTime) 
+        if (audioController.audioPlayerTime > loopEndTime) 
         {
-            AudioPlayer.time = loopStartTime;
+            LoopTrack();
             if (isRecording)
             {
                 StopRecording();
             }
         }
         testButton.SetEnabled(drumMIDIController.IsConnected());
+        multimediaProgress.value = audioController.audioPlayerTime;
     }
 
     private void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
-        AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
+        
 
         // Get references to UI elements and set up event handlers
         persoButton = root.Q<Button>("buttonPerso");
@@ -161,31 +164,28 @@ public class UIMenuController : MonoBehaviour
 
         fileName = root.Q<Label>("textFilename");
         playIconElement = root.Q<VisualElement>("iconPlay");
-        intensityIcon = root.Q<VisualElement>("iconIntensity");
         playIconElement.style.backgroundImage = playIconBackground;
 
         multimediaLine = root.Q<MinMaxSlider>("multimediaLine");
+        multimediaProgress = root.Q<ProgressBar>("multimediaBar");
         libraryListView = root.Q<ListView>("libraryListView");
         trackDropdown = root.Q<DropdownField>("trackSelection");
         trackDropdown.choices.Clear();
         trackDropdown.choices = trackList;
+
         trackDropdown.index = 0;
         trackSelected = trackDropdown.choices[0];
         trackDropdown.RegisterValueChangedCallback(async v => {
             trackSelected = v.newValue;
-            if (v.newValue == "drums")
+            StopTrack();
+            if (trackSelected == "drums")
             {
-                AudioPlayer.outputAudioMixerGroup = audioMixerGroupDrumTrack;
+                audioController.PauseTrack(1);
             }
-            else
+            else if (trackSelected == "no drums") 
             {
-                AudioPlayer.outputAudioMixerGroup = audioMixerGroupNoDrumsTrack;
+                audioController.PauseTrack(0);
             }
-            AudioPlayer.Stop();
-            track = await LoadAudioClip();
-            AudioPlayer.clip = track;
-            AudioPlayer.time = 0f;
-            AddDelayToSong();
         });
 
         // Set up event handlers for UI buttons
@@ -207,12 +207,16 @@ public class UIMenuController : MonoBehaviour
             if (isIntensitySet)
             {
                 isIntensitySet = false;
-                intensityIcon.style.backgroundImage = intensityIconDisable;
+                intensityButton.style.backgroundColor = unselectedSongColor;
+                StopTrack();
+                ResetNotesWithOffset();
             }
             else 
             {
                 isIntensitySet = true;
-                intensityIcon.style.backgroundImage = intensityIconEnable;
+                intensityButton.style.backgroundColor = selectedColor;
+                StopTrack();
+                ResetNotesWithOffset();
             }
         };
         persoButton.clicked += () => {
@@ -224,6 +228,8 @@ public class UIMenuController : MonoBehaviour
             processButton.SetEnabled(false);
             uploadButton.SetEnabled(false);
             trackDropdown.SetEnabled(false);
+            exercisesButton.style.backgroundColor = selectedColor;
+            songsButton.style.backgroundColor = unselectedSongColor;
 
         };
 
@@ -233,6 +239,8 @@ public class UIMenuController : MonoBehaviour
             processButton.SetEnabled(true);
             uploadButton.SetEnabled(true);
             trackDropdown.SetEnabled(true);
+            songsButton.style.backgroundColor = selectedColor;
+            exercisesButton.style.backgroundColor = unSelectedColor;
         };
 
         // Set up event handler for selecting a song in the library
@@ -242,15 +250,19 @@ public class UIMenuController : MonoBehaviour
             libraryListView.SetEnabled(false);
             mediaPlayButton.SetEnabled(false);
             songSelected = songDirectories[libraryListView.selectedIndex];
-            if (AudioPlayer.isPlaying) 
+            if (audioController.AudioIsPlaying()) 
             {
                 StopTrack();
                 drumController.SetMidiPathFile(songSelected+ "/drums.midi");
 
             }
             
-            track = await LoadAudioClip();  // Load the selected audio clip
-            AudioPlayer.clip = track;
+            tracks = await LoadAudioClip();  // Load the selected audio clip
+            if (tracks == null) 
+            {
+                return;
+            }
+            audioController.SetAudioClip(tracks[0], tracks[1]);
             AddDelayToSong();
             songSelectedIndex = libraryListView.selectedIndex;
 
@@ -284,10 +296,19 @@ public class UIMenuController : MonoBehaviour
             var maxValue = newValues[1];
             loopStartTime = minValue;
             loopEndTime = maxValue;
-            AudioPlayer.Pause();
-            AudioPlayer.time = minValue;
+            StopTrack();
+            ResetNotesWithOffset();
+            audioController.ResetPlayerTimer(loopStartTime);
         });
     }
+
+    //Función para "desplazar" las notas segun el startLoop
+    private void ResetNotesWithOffset()
+    {
+        drumController.CreateAllNotes(loopStartTime);
+    }
+
+    //Funcion para grabar retroalimentación
     private void StartRecordMidi() 
     {
         if (!isRecording)
@@ -297,8 +318,20 @@ public class UIMenuController : MonoBehaviour
             mediaIncreaseButton.SetEnabled(false);
             mediaStopButton.SetEnabled(false);
             isRecording = true;
-            AudioPlayer.Stop();
-            AudioPlayer.Play();
+            audioController.StopTrack();
+            audioController.PlayTrack();
+            if (trackSelected == "drums")
+            {
+                audioController.PauseTrack(1);
+            }
+            else if (trackSelected == "no drums")
+            {
+                audioController.PauseTrack(0);
+            }
+            else 
+            {
+                audioController.PauseTrack(2);
+            }
             drumMIDIController.Recording(loopStartTime,loopEndTime);
         }
         else 
@@ -312,7 +345,7 @@ public class UIMenuController : MonoBehaviour
         mediaDecreaseButton.SetEnabled(true);
         mediaIncreaseButton.SetEnabled(true);
         mediaStopButton.SetEnabled(true);
-        AudioPlayer.Stop();
+        audioController.StopTrack();
         isRecording = false;
         drumMIDIController.StopRecording();
     }
@@ -397,8 +430,8 @@ public class UIMenuController : MonoBehaviour
         libraryListView.selectedIndex = 0;
         if (songSelected != null) 
         {
-            track = await LoadAudioClip();
-            AudioPlayer.clip = track;
+            tracks = await LoadAudioClip();
+            audioController.SetAudioClip(tracks[0], tracks[1]);
             AddDelayToSong();
             drumController.SetMidiPathFile(songSelected + "/drums.midi");
         }
@@ -412,7 +445,6 @@ public class UIMenuController : MonoBehaviour
                 if (fileName.Equals(songLibraryName)) 
                 {
                     index = i;
-                    Debug.Log("Pase por aqui");
                     break;
                 }
             }
@@ -456,15 +488,46 @@ public class UIMenuController : MonoBehaviour
     //Funcion para DETENER la reproducción de la canción
     private void StopTrack() 
     {
-        if (AudioPlayer.isPlaying) 
+        if (audioController.AudioIsPlaying()) 
         {
-            AudioPlayer.Stop();
-            AudioPlayer.time = 0f;
+            audioController.StopTrack();
+            audioController.audioPlayerTime = 0f;
             GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
             foreach (GameObject obj in notas) 
             {
                 Destroy(obj);
             }
+            multimediaLine.minValue = 0;
+            multimediaLine.maxValue = audioLength;
+            loopStartTime = multimediaLine.minValue;
+            loopEndTime = multimediaLine.maxValue;
+            notesContainer.transform.localPosition = Vector3.zero;
+            ResetNotesWithOffset();
+        }
+    }
+
+    private void LoopTrack() 
+    {
+        audioController.StopTrack();
+        GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
+        foreach (GameObject obj in notas)
+        {
+            Destroy(obj);
+        }
+        audioController.audioPlayerTime = loopStartTime;
+        ResetNotesWithOffset();
+        audioController.PlayTrack();
+        if (trackSelected == "drums")
+        {
+            audioController.PauseTrack(1);
+        }
+        else if (trackSelected == "no drums")
+        {
+            audioController.PauseTrack(0);
+        }
+        else 
+        {
+            audioController.PauseTrack(2);
         }
     }
 
@@ -558,55 +621,58 @@ public class UIMenuController : MonoBehaviour
         AudioClip silenceClip = CreateSilenceClip(silenceDuration);
         float[] silenceData = new float[silenceClip.samples * silenceClip.channels];
         silenceClip.GetData(silenceData, 0);
-        float[] originalData = new float[AudioPlayer.clip.samples * AudioPlayer.clip.channels];
-        AudioPlayer.clip.GetData(originalData, 0);
+        float[] originalData = new float[audioController.drumTrackPlayer.clip.samples * audioController.drumTrackPlayer.clip.channels];
+        audioController.drumTrackPlayer.clip.GetData(originalData, 0);
         float[] combinedData = new float[silenceData.Length + originalData.Length];
         Array.Copy(silenceData, combinedData, silenceData.Length);
         Array.Copy(originalData, 0, combinedData, silenceData.Length, originalData.Length);
-        AudioClip combinedClip = AudioClip.Create("CombinedAudio", combinedData.Length, AudioPlayer.clip.channels, AudioPlayer.clip.frequency, false);
+        AudioClip combinedClip = AudioClip.Create("fixedDrumTrack", combinedData.Length, audioController.drumTrackPlayer.clip.channels, audioController.drumTrackPlayer.clip.frequency, false);
         combinedClip.SetData(combinedData, 0);
-        AudioPlayer.clip = combinedClip;
+        //AudioPlayer.clip = combinedClip;
+
+        float[] originalData2 = new float[audioController.drumlessTrackPlayer.clip.samples * audioController.drumlessTrackPlayer.clip.channels];
+        audioController.drumlessTrackPlayer.clip.GetData(originalData2, 0);
+        float[] combinedData2 = new float[silenceData.Length + originalData2.Length];
+        Array.Copy(silenceData, combinedData2, silenceData.Length);
+        Array.Copy(originalData2, 0, combinedData2, silenceData.Length, originalData2.Length);
+        AudioClip combinedClip2 = AudioClip.Create("fixedDrumlessTrack", combinedData2.Length, audioController.drumlessTrackPlayer.clip.channels, audioController.drumlessTrackPlayer.clip.frequency, false);
+        combinedClip2.SetData(combinedData2, 0);
+
+        audioController.SetAudioClip(combinedClip, combinedClip2);
 
         //Linea MULTIMEDIA
-        audioLength = AudioPlayer.clip.length/2;
+        audioLength = audioController.drumTrackPlayer.clip.length/2;
         multimediaLine.highLimit = audioLength;
         multimediaLine.minValue = 0;
         multimediaLine.maxValue = audioLength;
         loopStartTime = multimediaLine.minValue;
         loopEndTime = multimediaLine.maxValue;
-        lineController.maximum = audioLength;
+        multimediaProgress.highValue = audioLength;
+        multimediaProgress.lowValue = 0;
     }
 
-    //Adelanta la canción
+    //Adelanta la canción (MODIFICAR ESTA WEAAAA CTMMM)
     private void IncreaseTrack()
     {
-        if (track != null && AudioPlayer.time < loopEndTime)
+        if (audioController.audioPlayerTime < loopEndTime)
         {
-            AudioPlayer.time += moveTime;
-            RectTransform[] rectTransforms = notesContainer.GetComponentsInChildren<RectTransform>();
-            foreach (var trans in rectTransforms) 
-            {
-                trans.Translate(Vector3.left * moveTime * 2f*250f);
-            }
+            audioController.SetAudioPlayerTime(moveTime);
+            notesContainer.transform.Translate(Vector3.left * moveTime * 2f * 250f);
         }
     }
-    //Retrocede la canción
+    //Retrocede la canción (MODIFICAR ESTA WEAAA CTMMMM)
     private void DecreaseTrack()
     {
         if (track != null)
         {
-            if (AudioPlayer.time > moveTime)
+            if (audioController.audioPlayerTime > moveTime)
             {
-                AudioPlayer.time -= moveTime;
-                RectTransform[] rectTransforms = notesContainer.GetComponentsInChildren<RectTransform>();
-                foreach (var trans in rectTransforms)
-                {
-                    trans.Translate(Vector3.right * moveTime * 2f * 250f);
-                }
+                audioController.SetAudioPlayerTime(-moveTime);
+                notesContainer.transform.Translate(Vector3.right * moveTime * 2f * 250f);
             }
             else 
             {
-                AudioPlayer.time = 0;
+                audioController.ResetPlayerTime();
             }
         }
 
@@ -614,15 +680,24 @@ public class UIMenuController : MonoBehaviour
     //Reproduce la canción
     private void PlayTrack()
     {
-        if (track != null)
+        if (tracks != null)
         {
-            if (AudioPlayer.isPlaying)
+            if (audioController.AudioIsPlaying())
             {
-                AudioPlayer.Pause();
+                audioController.PauseTrack(2);
             }
             else 
             {
-                AudioPlayer.Play();
+                
+                audioController.PlayTrack();
+                if (trackSelected == "drums")
+                {
+                    audioController.PauseTrack(1);
+                }
+                else if (trackSelected == "no drums") 
+                {
+                    audioController.PauseTrack(0);
+                }
             }
         }
         else 
@@ -645,30 +720,34 @@ public class UIMenuController : MonoBehaviour
 
 
     // Cargar el clip de audio de manera async
-    async Task<AudioClip> LoadAudioClip()
+    async Task<AudioClip[]> LoadAudioClip()
     {
-        string songDirectory = null;
+
+        string drumTrackDir = null;
+        string drumlessTrackDir = null;
+
         if (songSelected != null)
         {
-            if (trackSelected != null)
-            {
-                songDirectory = songSelected + "/" + trackSelected + ".wav";
-            }
-            else 
-            {
-                return null;
-            }
+            drumTrackDir = songSelected + "/" + "drums" + ".wav";
+            drumlessTrackDir = songSelected + "/" + "no_drums" + ".wav";
+             
         }
         else 
         {
             return null;
         }
-        string songAuxPath = songDirectory.Replace('\\', '/');
-        string songDir = songAuxPath.Replace("/", "//");
-        if (songDir != null)
+        string drumDirAuxPath = drumTrackDir.Replace('\\', '/');
+        string drumDir = drumDirAuxPath.Replace("/", "//");
+
+        string drumlessDirAuxPath = drumlessTrackDir.Replace('\\', '/');
+        string drumlessDir = drumlessDirAuxPath.Replace("/", "//");
+
+        AudioClip audioClip1 = null;
+        AudioClip audioClip2 = null;
+
+        if (drumDir != null)
         {
-            AudioClip audioClip = null;
-            using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(songDir, AudioType.WAV))
+            using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(drumDir, AudioType.WAV))
             {
                 uwr.SendWebRequest();
                 try
@@ -677,7 +756,7 @@ public class UIMenuController : MonoBehaviour
                     if (uwr.isNetworkError || uwr.isHttpError) Debug.Log($"{uwr.error}");
                     else
                     {
-                        audioClip = DownloadHandlerAudioClip.GetContent(uwr);
+                        audioClip1 = DownloadHandlerAudioClip.GetContent(uwr);
                     }
                 }
                 catch (Exception err)
@@ -685,13 +764,40 @@ public class UIMenuController : MonoBehaviour
                     // Handle any exceptions
                 }
             };
-            audioClip.name = songDir;
-            return audioClip;
+            audioClip1.name = drumDir;
         }
         else
         {
             return null;
         }
+
+        if (drumlessDir != null)
+        {
+            using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(drumlessDir, AudioType.WAV))
+            {
+                uwr.SendWebRequest();
+                try
+                {
+                    while (!uwr.isDone) await Task.Delay(5);
+                    if (uwr.isNetworkError || uwr.isHttpError) Debug.Log($"{uwr.error}");
+                    else
+                    {
+                        audioClip2 = DownloadHandlerAudioClip.GetContent(uwr);
+                    }
+                }
+                catch (Exception err)
+                {
+                    // Handle any exceptions
+                }
+            };
+            audioClip2.name = drumlessDir;
+        }
+        else
+        {
+            return null;
+        }
+        AudioClip[] clips = { audioClip1, audioClip2 };
+        return clips;
     }
 
     //Dialog Folder Path
