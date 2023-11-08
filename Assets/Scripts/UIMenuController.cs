@@ -209,14 +209,12 @@ public class UIMenuController : MonoBehaviour
                 isIntensitySet = false;
                 intensityButton.style.backgroundColor = unselectedSongColor;
                 StopTrack();
-                ResetNotesWithOffset();
             }
             else 
             {
                 isIntensitySet = true;
                 intensityButton.style.backgroundColor = selectedColor;
                 StopTrack();
-                ResetNotesWithOffset();
             }
         };
         persoButton.clicked += () => {
@@ -297,15 +295,15 @@ public class UIMenuController : MonoBehaviour
             loopStartTime = minValue;
             loopEndTime = maxValue;
             StopTrack();
-            ResetNotesWithOffset();
+            MoveNoteContainer();
             audioController.ResetPlayerTimer(loopStartTime);
         });
     }
 
     //Función para "desplazar" las notas segun el startLoop
-    private void ResetNotesWithOffset()
+    private void MoveNoteContainer()
     {
-        drumController.CreateAllNotes(loopStartTime);
+        notesContainer.transform.localPosition = Vector3.left * ((2f * loopStartTime * 250f));
     }
 
     //Funcion para grabar retroalimentación
@@ -492,17 +490,11 @@ public class UIMenuController : MonoBehaviour
         {
             audioController.StopTrack();
             audioController.audioPlayerTime = 0f;
-            GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
-            foreach (GameObject obj in notas) 
-            {
-                Destroy(obj);
-            }
             multimediaLine.minValue = 0;
             multimediaLine.maxValue = audioLength;
             loopStartTime = multimediaLine.minValue;
             loopEndTime = multimediaLine.maxValue;
             notesContainer.transform.localPosition = Vector3.zero;
-            ResetNotesWithOffset();
         }
     }
 
@@ -515,7 +507,7 @@ public class UIMenuController : MonoBehaviour
             Destroy(obj);
         }
         audioController.audioPlayerTime = loopStartTime;
-        ResetNotesWithOffset();
+        MoveNoteContainer();
         audioController.PlayTrack();
         if (trackSelected == "drums")
         {
