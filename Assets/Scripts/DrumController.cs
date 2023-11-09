@@ -251,6 +251,10 @@ public class DrumController : MonoBehaviour
                 Image noteImage = newNote.GetComponent<Image>();
                 var fixedColor = drumColors[note.Item2];
                 fixedColor.a = note.Item3;
+                if (!menuController.isIntensitySet)
+                {
+                    fixedColor.a = 1f;
+                }
                 noteImage.color = fixedColor;
                 newNote.transform.localPosition = posFixed;
             }

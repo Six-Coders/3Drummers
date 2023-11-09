@@ -37,12 +37,22 @@ public class DrumMIDIController : MonoBehaviour
         MidiMaster.noteOnDelegate += NoteOn;
         drumMap.Add(36, kickTransform);
         drumMap.Add(38, snareTransform);
+        drumMap.Add(40, snareTransform);
+
+        drumMap.Add(26, hihatTransform);
         drumMap.Add(42, hihatTransform);
         drumMap.Add(46, hihatTransform);
+
         drumMap.Add(43, tomTransform);
         drumMap.Add(45, tomTransform);
+        drumMap.Add(47, tomTransform);
         drumMap.Add(48, tomTransform);
+        drumMap.Add(50, tomTransform);
+
         drumMap.Add(49, crashTransform);
+
+        drumMap.Add(51, rideTransform);
+        drumMap.Add(59, rideTransform);
     }
     void Update()
     {
@@ -50,13 +60,13 @@ public class DrumMIDIController : MonoBehaviour
         {
             isConected = true;
             inputDevice = InputDevice.GetByIndex(0);
-            alertDialog.CreateDialog("Notification","MIDI device "+inputDevice.Name+" is conected.");
+            alertDialog.CreateDialog("Notification","MIDI device "+inputDevice.Name+" is connected.");
         }
  
         if (isConected && InputDevice.GetAll().Count < 1) 
         {
             isConected = false;
-            alertDialog.CreateDialog("Notification", "MIDI device " + inputDevice.Name + " is disconected.");
+            alertDialog.CreateDialog("Notification", "MIDI device " + inputDevice.Name + " is disconnected.");
             inputDevice = null;
         }
         foreach (var t in drumMap) 
@@ -145,7 +155,7 @@ public class DrumMIDIController : MonoBehaviour
                             }
                         case 48:
                             {
-                                if (tupleRecording.Item2 == 43 || tupleRecording.Item2 == 45 || tupleRecording.Item2 == 47 || tupleRecording.Item2 == 48 || tupleRecording.Item2 == 50) 
+                                if (tupleRecording.Item2 == 43 || tupleRecording.Item2 == 45 || tupleRecording.Item2 == 47 || tupleRecording.Item2 == 48 || tupleRecording.Item2 == 50 || tupleRecording.Item2 == 58) 
                                 {
                                     score += 1;
                                 }

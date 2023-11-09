@@ -124,10 +124,12 @@ public class UIMenuController : MonoBehaviour
         if (audioController.AudioIsPlaying())
         {
             playIconElement.style.backgroundImage = pauseIconBackground;
+            exportMIDIButton.SetEnabled(false);
         }
         else
         {
             playIconElement.style.backgroundImage = playIconBackground;
+            exportMIDIButton.SetEnabled(true);
         }
 
         if (audioController.audioPlayerTime > loopEndTime) 
@@ -204,6 +206,11 @@ public class UIMenuController : MonoBehaviour
         };
         intensityButton.clicked += () =>
         {
+            GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
+            foreach (var n in notas)
+            {
+                Destroy(n);
+            }
             if (isIntensitySet)
             {
                 isIntensitySet = false;
@@ -216,6 +223,7 @@ public class UIMenuController : MonoBehaviour
                 intensityButton.style.backgroundColor = selectedColor;
                 StopTrack();
             }
+            drumController.CreateAllNotes();
         };
         persoButton.clicked += () => {
             persoSetup.CreatePersoWindow();
@@ -325,10 +333,6 @@ public class UIMenuController : MonoBehaviour
             else if (trackSelected == "no drums")
             {
                 audioController.PauseTrack(0);
-            }
-            else 
-            {
-                audioController.PauseTrack(2);
             }
             drumMIDIController.Recording(loopStartTime,loopEndTime);
         }
@@ -501,13 +505,9 @@ public class UIMenuController : MonoBehaviour
     private void LoopTrack() 
     {
         audioController.StopTrack();
-        GameObject[] notas = GameObject.FindGameObjectsWithTag("Note");
-        foreach (GameObject obj in notas)
-        {
-            Destroy(obj);
-        }
         audioController.audioPlayerTime = loopStartTime;
         MoveNoteContainer();
+        Debug.Log("Pase por aqui...");
         audioController.PlayTrack();
         if (trackSelected == "drums")
         {
